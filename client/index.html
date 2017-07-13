@@ -1,7 +1,38 @@
 
-Hello World
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jsFantasy</title>
+</head>
+<body>
+<h1>jsFantasy</h1>
+
+
+
+
+
+
+
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-  var socket = io();
+	var socket = io();
+
+	var random = Math.random();  //when you use a random number, it stays the same 
+	// for the browser you have opened up no matter how many times you push the button 
+	// 	but if you open another browser window, it will give another random number.
+
+	var happy = function() {
+		socket.emit('happy', {reason:'its my birthday' + random
+		});
+	}
+
+	socket.on('serverMsg', function(data) {
+		console.log(data.msg);
+	});
+
 </script>
+
+<button onclick="happy()">Happy</button>  <!--This is the button for the random number-->
+</body>
+</html>

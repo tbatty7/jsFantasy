@@ -1,0 +1,13 @@
+{
+  "name": "jsfantasy",
+  "version": "1.0.0",
+  "description": "An RPG to teach javascript",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tim Batty",
+  "license": "ISC"
+}

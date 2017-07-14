@@ -7,7 +7,7 @@
 <body>
 <h1>jsFantasy</h1>
 
-
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
 
 
 
@@ -16,21 +16,15 @@
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
+	var ctx = document.getElementById("ctx").getContext("2d");
+	ctx.font = '30px Arial';
+
 	var socket = io();
 
-	var random = Math.random();  //when you use a random number, it stays the same 
-	// for the browser you have opened up no matter how many times you push the button 
-	// 	but if you open another browser window, it will give another random number.
-
-	var happy = function() {
-		socket.emit('happy', {reason:'its my birthday' + random
-		});
-	}
-
-	socket.on('serverMsg', function(data) {
-		console.log(data.msg);
+	socket.on('newPosition', function(data) {
+		ctx.clearRect(0, 0, 500, 500);
+		ctx.fillText("P", data.x, data.y);
 	});
-
 </script>
 
 <button onclick="happy()">Happy</button>  <!--This is the button for the random number-->

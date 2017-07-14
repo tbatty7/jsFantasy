@@ -19,23 +19,36 @@ console.log("Server Started");
 // We will use the syntax of passing a function as an argument into another function
 // while coding communication on the server.
 
+var SOCKET_LIST = {};
+
 var io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {
-	console.log('socket connection');
-
-	socket.on('happy', function(data) {
-		console.log('happy because ' + data.reason);
-	});
+	socket.id = Math.random();
+	socket.x = 0;
+	socket.y = 0;
+	SOCKET_LIST[socket.id] = socket;
 
 	socket.emit('serverMsg', {
 		msg: 'hello'
 	});
 
-
-
 });
 
+setInterval(function(){
+	
+	for (var i in SOCKET_LIST) {
+		var socket = SOCKET_LIST[i];
+		socket.x++;
+		socket.y++;
+
+		socket.emit('newPosition', {
+			x:socket.x,
+			y:socket.y
+		});
+	}
+
+},1000/25);
 
 
 

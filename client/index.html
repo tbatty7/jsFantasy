@@ -21,12 +21,15 @@
 
 	var socket = io();
 
-	socket.on('newPosition', function(data) {
+	socket.on('newPositions', function(data) {
 		ctx.clearRect(0, 0, 500, 500);
-		ctx.fillText("P", data.x, data.y);
+		for (var i = 0; i < data.length; i++) 
+			ctx.fillText(data[i].number, data[i].x, data[i].y);
+			
+		
 	});
 </script>
 
-<button onclick="happy()">Happy</button>  <!--This is the button for the random number-->
+
 </body>
 </html>

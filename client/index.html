@@ -1,35 +1,124 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-	<title>jsFantasy</title>
-</head>
-<body>
-<h1>jsFantasy</h1>
+	<head>
+	  <!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+	<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<title>jsFantasy</title>
+
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+	</head>
+	<body>
+
+		<div class="container-fluid">
+			<div class="row">
+				<h1 class="text-center alert-success col-xs-8 col-xs-offset-2">jsFantasy</h1>
+				</div>
+				
+				<div class="row">
+					<div class="col-xs-1 ">
+						<div class="alert alert-success" style="height: 400px">
+						
+						Side Panel
+
+						</div>
+					</div>
+
+					<div class="col-xs-7">
+						<canvas id="ctx" width="700" height="400" style="border:1px solid #000000;"></canvas>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="alert alert-info">
+							<form>
+								<div class="form-group">	
+									<textarea id="bigConsole" class="form-control" rows="15"></textarea>
+								</div>
+									<input id="submitBigCon" type="submit" class="btn btn-primary"></input>
+							</form>
+								
+						</div>
+					</div>
+				</div>
+
+			<div class="row">
+				<div class="col-xs-8 ">
+					<div class="alert alert-info">
+						<form class="form-inline">
+							<div class="form-group" onsubmit="handle">
+							<button id="submitCon" type="submit" class="btn btn-primary">Submit</button>
+							<textarea class="form-control" style="width: 760px" id="console" rows="5"></textarea>
+								
+							</div>
+						</form>
+
+					</div>
+					
+				</div>
+
+				<div id="lesson" class="col-xs-4 alert alert-success" style="height: 140px">
+					
+				</div>
+			</div>
+		</div>
 
 
 
 
+		<script
+		      src="https://code.jquery.com/jquery-3.2.1.js"
+		      integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+		      crossorigin="anonymous"></script>
+
+		<script type="text/javascript" src="client/js/jScript.js"></script>
+
+		<script>
+			var ctx = document.getElementById("ctx").getContext("2d");
+			ctx.font = '30px Arial';
+
+			var socket = io();
+
+			socket.on('newPositions', function(data) {
+				ctx.clearRect(0, 0, 700, 400);
+				for (var i = 0; i < data.length; i++) 
+					ctx.fillText(data[i].number, data[i].x, data[i].y);
+
+			document.onkeydown = function(event) {
+				if(event.keyCode === 13) {     // Enter
+					
+
+					var consoleText = document.getElementById('console').value;
+					var bigConsoleText = document.getElementById('bigConsole').value;
+
+					if (consoleText) {
+						event.preventDefault();
+						socket.emit('consoleText', { console: consoleText}); //The socket.emit() communicates to server
+						// console.log(consoleText);
+
+						document.getElementById('console').value = "";
+						
+					} else if (!bigConsoleText){
+						alert('Please Enter Text in Console below Video Screen before hitting Enter');
+					}
 
 
-<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script>
-	var ctx = document.getElementById("ctx").getContext("2d");
-	ctx.font = '30px Arial';
 
-	var socket = io();
+				} 
+				
+			}
 
-	socket.on('newPositions', function(data) {
-		ctx.clearRect(0, 0, 500, 500);
-		for (var i = 0; i < data.length; i++) 
-			ctx.fillText(data[i].number, data[i].x, data[i].y);
-			
-		
-	});
-</script>
+			});
 
 
-</body>
+		</script>
+
+
+	</body>
 </html>

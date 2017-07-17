@@ -25,10 +25,25 @@ var PLAYER_LIST = {};
 // Now we are adding a player constrictor with the function below.
 var Player = function(id) { //This will create a player with this id
 	var self = {
-		x: 250,
-		y: 250,
+		x: 325,
+		y: 200,
 		id: id,  //You have to pass the id in this function
-		number: " " + Math.floor(10 * Math.random())
+		number: " " + Math.floor(10 * Math.random()),
+		east: false,
+		west: false,
+		north: false,
+		south: false,
+		maxSpd: 10, 
+	}
+	self.updatePosition = function() {
+		if(self.east)
+			self.x += self.maxSpd;
+		if(self.west)
+			self.x -= self.maxSpd;
+		if(self.north)
+			self.y -= self.maxSpd;
+		if(self.south)
+			self.y += self.maxSpd;
 	}
 	return self;
 }
@@ -46,29 +61,47 @@ io.sockets.on('connection', function(socket) {
 		//This disconnects the player when they close their browser.
 		delete PLAYER_LIST[socket.id];
 	});
-	socket.emit('serverMsg', {
-		msg: 'hello'
+	
+	// socket.emit('serverMsg', {
+	// 	msg: 'hello'
+	// });
+
+	socket.on('consoleText', function(data) {
+		console.log("Server says: " + data.console);
+		msg: data
+		return data.console;
 	});
+
+	function east(num) {
+		player.x += num;
+	}
 
 });
 // To allow the player to interact with the character
 // you need to seperate the sockets and players in the 
 // SOCKET_LIST.  You cannot have the x and y position
 // directly linked with the socket if you want to control
-// your character.  
+// your character.  So we create a PLAYER_LIST object.
+
+
+
 setInterval(function(){
 	var pack = [];
 	for (var i in PLAYER_LIST) {
 		var player = PLAYER_LIST[i];
-		player.x++;
-		player.y++;
-		pack.push({
+		player.updatePosition(); // This is how to move the character.
+		//  I may need to add 4 functions that will be called through 
+		//  the fabricated console on the page.
+
+			pack.push({
 			x:player.x,
 			y:player.y,
 			number:player.number
 		});
 	}
-	for (var i in SOCKET_LIST){
+
+
+	for (var i in SOCKET_LIST){ //This is a loop to emit positions to client
 		var socket = SOCKET_LIST[i];
 		socket.emit('newPositions', pack) 
 		

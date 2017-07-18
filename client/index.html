@@ -90,32 +90,20 @@
 				for (var i = 0; i < data.length; i++) 
 					ctx.fillText(data[i].number, data[i].x, data[i].y);
 
-			document.onkeydown = function(event) {
-				if(event.keyCode === 13) {     // Enter
-					
-
-					var consoleText = document.getElementById('console').value;
-					var bigConsoleText = document.getElementById('bigConsole').value;
-
-					if (consoleText) {
-						event.preventDefault();
-						socket.emit('consoleText', { console: consoleText}); //The socket.emit() communicates to server
-						// console.log(consoleText);
-
-						document.getElementById('console').value = "";
-						
-					} else if (!bigConsoleText){
-						alert('Please Enter Text in Console below Video Screen before hitting Enter');
-					}
-
-
-
-				} 
-				
-			}
-
+			
 			});
-
+			function east(num) {
+				socket.emit('newPositions', {direction:'east', endPosition: num});
+			}
+			function west(num) {
+				socket.emit('newPositions', {direction:'west', endPosition: num});
+			}
+			function north(num) {
+				socket.emit('newPositions', {direction:'north', endPosition: num});
+			}
+			function south(num) {
+				socket.emit('newPositions', {direction:'south', endPosition: num});
+			}
 
 		</script>
 

@@ -20,10 +20,31 @@ $(function(){
 
 	});
 
+	$( "textarea#console" ).keydown(function( event ) {
+	  if ( event.keyCode === 13 ) {
+		  	// var consoleText = document.getElementById('console').value;
+		  	var consoleText = $('textarea#console').val();
+		  	// var bigConsoleText = document.getElementById('bigConsole').value;
+		  	var	bigConsoleText = $('textarea#bigConsoleText').val();
 
-// function east(num) {
-	
-// }
+		  	if (consoleText) {
+		  		event.preventDefault();
+
+		  		console.log(consoleText);
+				$('body').append('<script>' + consoleText + '<\/script>');
+				$('textarea#console').val("");
+		  		
+		  	} else if (!consoleText){
+		  		alert('Please Enter Text in Console below Video Screen before hitting Enter');
+		  	}
+	  
+		
+		
+		} 
+		
+	});
+
+
 
 
 });

@@ -66,15 +66,24 @@ io.sockets.on('connection', function(socket) {
 	// 	msg: 'hello'
 	// });
 
-	socket.on('consoleText', function(data) {
-		console.log("Server says: " + data.console);
-		msg: data
-		return data.console;
+	socket.on('newPositions', function(data) {
+		console.log(data);
+		if (data.direction === 'east') {
+			player.x += (data.endPosition * player.maxSpd);
+		}
+		else if (data.direction === "west") {
+			player.x -= (data.endPosition * player.maxSpd);
+		}
+		else if (data.direction === "north") {
+			player.y -= (data.endPosition * player.maxSpd);
+		}
+		else if (data.direction === "south") {
+			player.y += (data.endPosition * player.maxSpd);
+		}
 	});
 
-	function east(num) {
-		player.x += num;
-	}
+	
+
 
 });
 // To allow the player to interact with the character

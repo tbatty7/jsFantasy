@@ -79,56 +79,8 @@
 
 		<script type="text/javascript" src="client/js/jScript.js"></script>
 
-		<script>
-			var ctx = document.getElementById("ctx").getContext("2d");
-			ctx.font = '30px Arial';
-
-			var socket = io();
-
-			socket.on('newPositions', function(data) {
-				ctx.clearRect(0, 0, 700, 400);
-				for (var i = 0; i < data.length; i++) 
-					ctx.fillText(data[i].number, data[i].x, data[i].y);
-
+		<script id="consoleScript">
 			
-			});
-			function east(num) {
-				if (num < 1) {
-					socket.emit('newPositions', {direction:'east', endPosition: 1});
-				} else if (!num) {
-					socket.emit('newPositions', {direction:'east', endPosition: 1});
-				} else {
-					socket.emit('newPositions', {direction:'east', endPosition: num});
-				}
-
-			}
-			function west(num) {
-				if (num < 1) {
-					socket.emit('newPositions', {direction:'west', endPosition: 1});
-				} else if (!num) {
-					socket.emit('newPositions', {direction:'west', endPosition: 1});
-				} else {
-					socket.emit('newPositions', {direction:'west', endPosition: num});
-				}
-			}
-			function north(num) {
-				if (num < 1) {
-					socket.emit('newPositions', {direction:'north', endPosition: 1});
-				} else if (!num) {
-					socket.emit('newPositions', {direction:'north', endPosition: 1});
-				} else {
-					socket.emit('newPositions', {direction:'north', endPosition: num});
-				}
-			}
-			function south(num) {
-				if (num < 1) {
-					socket.emit('newPositions', {direction:'south', endPosition: 1});
-				} else if (!num) {
-					socket.emit('newPositions', {direction:'south', endPosition: 1});
-				} else {
-					socket.emit('newPositions', {direction:'south', endPosition: num});
-				}
-			}
 
 		</script>
 

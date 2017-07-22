@@ -31,7 +31,8 @@ $(function(){
 		  		event.preventDefault();
 
 		  		console.log(consoleText);
-				$('body').append('<script>' + consoleText + '<\/script>');
+				$('body').append('<script>' + consoleText + '</script>');
+
 				$('textarea#console').val("");
 		  		
 		  	} else if (!consoleText){

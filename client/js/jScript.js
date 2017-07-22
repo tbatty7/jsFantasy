@@ -21,7 +21,7 @@ $(function(){
 	});
 
 	$( "textarea#console" ).keydown(function( event ) {
-	  if ( event.keyCode === 13 ) {
+	  if ( event.keyCode === 13 ) {  // Enter key
 		  	// var consoleText = document.getElementById('console').value;
 		  	var consoleText = $('textarea#console').val();
 		  	// var bigConsoleText = document.getElementById('bigConsole').value;

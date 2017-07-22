@@ -29,21 +29,31 @@ var Player = function(id) { //This will create a player with this id
 		y: 200,
 		id: id,  //You have to pass the id in this function
 		number: " " + Math.floor(10 * Math.random()),
-		east: false,
-		west: false,
-		north: false,
-		south: false,
+		east: 325,
+		west: 325,
+		north: 200,
+		south: 200,
 		maxSpd: 10, 
 	}
 	self.updatePosition = function() {
-		if(self.east)
+	// This method animates the movement by incrementing the x or
+	// y values until they match the increase to the new position 
+	// parameter set in the direction functions.  I also had 
+	// to change the opposite direction east for west and west 
+	// for east, so it would not cause conflicting commands.
+		if(self.east > self.x) {
 			self.x += self.maxSpd;
-		if(self.west)
+			self.west += self.maxSpd;
+		} else if(self.west < self.x) {
 			self.x -= self.maxSpd;
-		if(self.north)
+			self.east -= self.maxSpd;
+		} else if(self.north < self.y) {
 			self.y -= self.maxSpd;
-		if(self.south)
+			self.south -= self.maxSpd;
+		} else if(self.south > self.y) {
 			self.y += self.maxSpd;
+			self.north += self.maxSpd;
+		}
 	}
 	return self;
 }
@@ -68,17 +78,20 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('newPositions', function(data) {
 		console.log(data);
+// This changes the value of n,s,e,w in player object to the
+// endPosition value assigned in the parameter of the direction
+// functions you type in the console.
 		if (data.direction === 'east') {
-			player.x += (data.endPosition * player.maxSpd);
+			player.east += (data.endPosition * player.maxSpd);
 		}
 		else if (data.direction === "west") {
-			player.x -= (data.endPosition * player.maxSpd);
+			player.west -= (data.endPosition * player.maxSpd);
 		}
 		else if (data.direction === "north") {
-			player.y -= (data.endPosition * player.maxSpd);
+			player.north -= (data.endPosition * player.maxSpd);
 		}
 		else if (data.direction === "south") {
-			player.y += (data.endPosition * player.maxSpd);
+			player.south += (data.endPosition * player.maxSpd);
 		}
 	});
 
@@ -98,10 +111,7 @@ setInterval(function(){
 	var pack = [];
 	for (var i in PLAYER_LIST) {
 		var player = PLAYER_LIST[i];
-		player.updatePosition(); // This is how to move the character.
-		//  I may need to add 4 functions that will be called through 
-		//  the fabricated console on the page.
-
+		player.updatePosition(); // This loop animates the moving of the character.
 			pack.push({
 			x:player.x,
 			y:player.y,

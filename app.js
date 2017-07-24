@@ -25,15 +25,16 @@ var PLAYER_LIST = {};
 // Now we are adding a player constrictor with the function below.
 var Player = function(id) { //This will create a player with this id
 	var self = {
-		x: 325,
+		x: 340,
 		y: 200,
 		id: id,  //You have to pass the id in this function
 		number: " " + Math.floor(10 * Math.random()),
-		east: 325,
-		west: 325,
+		east: 340,
+		west: 340,
 		north: 200,
 		south: 200,
-		maxSpd: 10, 
+		maxSpd: 5, 
+		stepSize: 20
 	}
 	self.updatePosition = function() {
 	// This method animates the movement by incrementing the x or
@@ -44,15 +45,19 @@ var Player = function(id) { //This will create a player with this id
 		if(self.east > self.x) {
 			self.x += self.maxSpd;
 			self.west += self.maxSpd;
+			console.log("X: " + self.x + " Y: " + self.y);
 		} else if(self.west < self.x) {
 			self.x -= self.maxSpd;
 			self.east -= self.maxSpd;
+			console.log("X: " + self.x + " Y: " + self.y);
 		} else if(self.north < self.y) {
 			self.y -= self.maxSpd;
 			self.south -= self.maxSpd;
+			console.log("X: " + self.x + " Y: " + self.y);
 		} else if(self.south > self.y) {
 			self.y += self.maxSpd;
 			self.north += self.maxSpd;
+			console.log("X: " + self.x + " Y: " + self.y);
 		}
 	}
 	return self;
@@ -82,16 +87,16 @@ io.sockets.on('connection', function(socket) {
 // endPosition value assigned in the parameter of the direction
 // functions you type in the console.
 		if (data.direction === 'east') {
-			player.east += (data.endPosition * player.maxSpd);
+			player.east += (data.endPosition * player.stepSize);
 		}
 		else if (data.direction === "west") {
-			player.west -= (data.endPosition * player.maxSpd);
+			player.west -= (data.endPosition * player.stepSize);
 		}
 		else if (data.direction === "north") {
-			player.north -= (data.endPosition * player.maxSpd);
+			player.north -= (data.endPosition * player.stepSize);
 		}
 		else if (data.direction === "south") {
-			player.south += (data.endPosition * player.maxSpd);
+			player.south += (data.endPosition * player.stepSize);
 		}
 	});
 
@@ -116,9 +121,9 @@ setInterval(function(){
 			x:player.x,
 			y:player.y,
 			number:player.number
+
 		});
 	}
-
 
 	for (var i in SOCKET_LIST){ //This is a loop to emit positions to client
 		var socket = SOCKET_LIST[i];

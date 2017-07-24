@@ -52,15 +52,18 @@
 				</div>
 
 			<div class="row">
-				<div class="col-xs-8 ">
+				<div class="col-xs-1 alert alert-info">
+				notes
+				</div>
+				<div class="col-xs-7">
 					<div class="alert alert-info">
 						<form class="form-inline">
 							<div class="form-group" onsubmit="handle">
-							<button id="submitCon" type="submit" class="btn btn-primary">Submit</button>
-							<textarea class="form-control" style="width: 760px" id="console" rows="5"></textarea>
+								<textarea class="input-lg form-control" placeholder="This is the console.  Type your single line commands here." style="width: 725px; font-family: monospace;" id="console" rows="1"></textarea>
 								
 							</div>
 						</form>
+					<p class="h3" id="lastCommand"><strong>Last Command:</strong></p>
 
 					</div>
 					

@@ -14,8 +14,10 @@ var socket = io();
 
 socket.on('newPositions', function(data) {
 	ctx.clearRect(0, 0, 700, 400);
-	for (var i = 0; i < data.length; i++) 
+	for (var i = 0; i < data.length; i++) {
 		ctx.fillText(data[i].number, data[i].x, data[i].y);
+		ctx.fillText(".", 20, 20);
+	}
 
 
 });
@@ -70,6 +72,7 @@ function consoleEnter() {
 
 		  		console.log(consoleText);
 				$('body').append('<script>' + consoleText + '</script>');
+				$('#lastCommand').html('<strong>Last Command:</strong> "' + consoleText + '"');
 
 				$('textarea#console').val("");
 		  		
@@ -98,7 +101,7 @@ function oldButton() {
 		event.preventDefault();
 		var consoleText = $('textarea#console').val();
 		// console.log(consoleText);
-		$('#lesson').prepend('<p>' + consoleText + '</p>');
+		$('#lesson').text('Last Command: ' + consoleText);
 		socket.emit('consoleText', consoleText);
 		$('textarea#console').val("");
 	});

@@ -1,6 +1,6 @@
 $(function(){
 
-	oldButton();
+	// oldButton();
 	bigConsole();
 	consoleEnter();
 });
@@ -16,7 +16,7 @@ socket.on('newPositions', function(data) {
 	ctx.clearRect(0, 0, 700, 400);
 	for (var i = 0; i < data.length; i++) {
 		ctx.fillText(data[i].number, data[i].x, data[i].y);
-		ctx.fillText(".", 20, 20);
+		ctx.fillText("NPC", 20, 20);
 	}
 
 
@@ -71,8 +71,8 @@ function consoleEnter() {
 		  		event.preventDefault();
 
 		  		console.log(consoleText);
-				$('body').append('<script>' + consoleText + '</script>');
-				$('#lastCommand').html('<strong>Last Command:</strong> "' + consoleText + '"');
+				$('body').append('<script>' + consoleText + '</script>'); //should I use append or html here?
+				$('#lastCommand').html('<strong>Last Console Command:</strong> "' + consoleText + '"');
 
 				$('textarea#console').val("");
 		  		
@@ -96,22 +96,24 @@ function bigConsole() {
 	});
 }
 
-function oldButton() {
-	$('button#submitCon').click(function(event){
-		event.preventDefault();
-		var consoleText = $('textarea#console').val();
-		// console.log(consoleText);
-		$('#lesson').text('Last Command: ' + consoleText);
-		socket.emit('consoleText', consoleText);
-		$('textarea#console').val("");
-	});
+// function oldButton() {
+// 	$('button#submitCon').click(function(event){
+// 		event.preventDefault();
+// 		var consoleText = $('textarea#console').val();
+// 		// console.log(consoleText);
+// 		$('#lesson').text('Last Command: ' + consoleText);
+// 		socket.emit('consoleText', consoleText);
+// 		$('textarea#console').val("");
+// 	});
 
-}
+// }
 
 
-module.exports = {
-	south:south,
-	north:north,
-	east:east,
-	west:west
-}
+module.exports =   {
+	south: south,
+	north: north,
+	east: east,
+	west: west,
+	bigConsole: bigConsole,
+	consoleEnter: consoleEnter
+};

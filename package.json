@@ -4,10 +4,26 @@
   "description": "An RPG to teach javascript",
   "main": "app.js",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.1.0",
+    "jquery": "^3.2.1",
+    "jsdom": "^11.1.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^3.4.2",
+    "sinon": "^3.0.0",
+    "socket.io-client": "^2.0.3"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha || true"
   },
   "author": "Tim Batty",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbatty7/jsFantasy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tbatty7/jsFantasy/issues"
+  },
+  "homepage": "https://github.com/tbatty7/jsFantasy#readme"
 }

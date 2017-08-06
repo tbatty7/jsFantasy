@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "An RPG to teach javascript",
   "main": "app.js",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.15.3",
+    "socket.io": "^2.0.3"
+  },
   "devDependencies": {},
   "scripts": {
+    "start": "node ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tim Batty",

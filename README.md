@@ -7,3 +7,14 @@ play as a noob, with no risk to losing, or they can play with risk of losing a c
 to death and respawning at the nearest town.
 
 I plan to include a number of other features.
+
+## How to run
+
+- Make sure you have Node installed.
+- Go to root directory and type node app.js in console
+- In browser, type localhost:2000
+- In the command console at the bottom of the screen type one of the four commands and hit enter.
+  - east(number); Pass a number as an argument  
+  - west(number); Pass a number as an argument  
+  - north(number); Pass a number as an argument  
+  - south(number); Pass a number as an argument  

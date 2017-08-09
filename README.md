@@ -7,3 +7,10 @@ play as a noob, with no risk to losing, or they can play with risk of losing a c
 to death and respawning at the nearest town.
 
 I plan to include a number of other features.
+
+
+## Developing jsFantasy
+
+1. **Install Dependencies**: `npm install`
+2. **Run Unit Tests**: `npm test`
+3. **Run Application Locally**: `npm run start`

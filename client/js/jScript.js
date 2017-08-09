@@ -1,7 +1,8 @@
 var socket;
+var ctx;
 
 function initCtx() {
-    var ctx = document.getElementById("ctx").getContext("2d");
+    ctx = document.getElementById("ctx").getContext("2d");
     ctx.font = '30px Arial';
 }
 

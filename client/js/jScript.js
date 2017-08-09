@@ -19,20 +19,23 @@ function initSocketIo() {
 
 
 function east(num) {
-    if (num < 1) {
+	if (num < 1) {
         socket.emit('newPositions', {direction: 'east', endPosition: 1});
     } else if (!num) {
         socket.emit('newPositions', {direction: 'east', endPosition: 1});
+    } else if (isNaN(num)) {
+    	socket.emit('newPositions', {direction: 'east', endPosition: 1});
     } else {
         socket.emit('newPositions', {direction: 'east', endPosition: num});
     }
-
 }
 function west(num) {
     if (num < 1) {
         socket.emit('newPositions', {direction: 'west', endPosition: 1});
     } else if (!num) {
         socket.emit('newPositions', {direction: 'west', endPosition: 1});
+    } else if (isNaN(num)) {
+    	socket.emit('newPositions', {direction: 'west', endPosition: 1});
     } else {
         socket.emit('newPositions', {direction: 'west', endPosition: num});
     }
@@ -42,6 +45,8 @@ function north(num) {
         socket.emit('newPositions', {direction: 'north', endPosition: 1});
     } else if (!num) {
         socket.emit('newPositions', {direction: 'north', endPosition: 1});
+    } else if (isNaN(num)) {
+    	socket.emit('newPositions', {direction: 'north', endPosition: 1});
     } else {
         socket.emit('newPositions', {direction: 'north', endPosition: num});
     }
@@ -51,6 +56,8 @@ function south(num) {
         socket.emit('newPositions', {direction: 'south', endPosition: 1});
     } else if (!num) {
         socket.emit('newPositions', {direction: 'south', endPosition: 1});
+    } else if (isNaN(num)) {
+    	socket.emit('newPositions', {direction: 'south', endPosition: 1});
     } else {
         socket.emit('newPositions', {direction: 'south', endPosition: num});
     }
@@ -76,6 +83,7 @@ function handleEnter(event) {
             alert('Please Enter Text in Console below Video Screen before hitting Enter');
         }
     }
+    document.getElementById('consoleScript').nextElementSibling.remove();
 }
 
 function handleConsole(event) {
@@ -88,19 +96,19 @@ function handleConsole(event) {
     // return bigConsoleText;
 }
 
-function handleOldButton(event) {
-    event.preventDefault();
-    var consoleText = $('textarea#console').val();
-    // console.log(consoleText);
-    $('#lesson').text('Last Command: ' + consoleText);
-    socket.emit('consoleText', consoleText);
-    $('textarea#console').val("");
-}
+// function handleOldButton(event) {
+//     event.preventDefault();
+//     var consoleText = $('textarea#console').val();
+//     // console.log(consoleText);
+//     $('#lesson').text('Last Command: ' + consoleText);
+//     socket.emit('consoleText', consoleText);
+//     $('textarea#console').val("");
+// }
 
 function initKeyActions() {
     $("textarea#console").keydown(handleEnter);
     $('input#submitBigCon').click(handleConsole);
-    $('button#submitCon').click(handleOldButton);
+   // $('button#submitCon').click(handleOldButton);
 }
 
 function init() {

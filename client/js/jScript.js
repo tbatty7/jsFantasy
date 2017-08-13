@@ -17,6 +17,18 @@ function initSocketIo() {
     });
 }
 
+function initChat(){
+    socket.on('addToChat', function(data){
+        chat.innerHTML += '<p>' + data + '</p>';
+    });
+}
+
+function sendChat(){
+    var consoleText = $('textarea#console').val();
+    socket.emit('sendMsgToServer', consoleText);
+    $('textarea#console').val("");
+}
+
 
 function east(num) {
 	if (num < 1) {
@@ -70,7 +82,12 @@ function handleEnter(event) {
         // var bigConsoleText = document.getElementById('bigConsole').value;
         var bigConsoleText = $('textarea#bigConsoleText').val();
 
-        if (consoleText) {
+        if (consoleText && consoleText.substring(0,2) === "//") {
+            event.preventDefault();
+            
+            sendChat();
+            
+        } else if (consoleText) {
             event.preventDefault();
 
             console.log(consoleText);
@@ -90,7 +107,7 @@ function handleConsole(event) {
     event.preventDefault(); // stops form from refreshing screen
     var bigConsoleText = $('textarea#bigConsole').val();
     console.log(bigConsoleText);
-    $('#lesson').prepend('<p>' + bigConsoleText + '</p>');
+    $('#chat').prepend('<p>' + bigConsoleText + '</p>');
     socket.emit('bigConsoleText', bigConsoleText);
     $('textarea#bigConsole').val("");
     // return bigConsoleText;
@@ -115,4 +132,5 @@ function init() {
     initCtx();
     initSocketIo();
     initKeyActions();
+    initChat();
 }

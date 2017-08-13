@@ -128,6 +128,13 @@ io.sockets.on('connection', function(socket) {
 		Player.onDisconnect(socket);
 	});
 	
+	socket.on("sendMsgToServer", function(msg) {
+		console.log(msg);
+		var playerName = ("" + socket.id).slice(2,5);
+		for(var i in SOCKET_LIST) {
+			SOCKET_LIST[i].emit('addToChat', playerName + msg);
+		}
+	});
 
 });
 

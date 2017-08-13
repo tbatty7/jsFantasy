@@ -19,7 +19,7 @@ function initSocketIo() {
 
 function initChat(){
     socket.on('addToChat', function(data){
-        chat.innerHTML += '<p>' + data + '</p>';
+        chat.prepend(data).innerHTML;
     });
 }
 

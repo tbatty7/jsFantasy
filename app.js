@@ -132,7 +132,7 @@ io.sockets.on('connection', function(socket) {
 		console.log(msg);
 		var playerName = ("" + socket.id).slice(2,5);
 		for(var i in SOCKET_LIST) {
-			SOCKET_LIST[i].emit('addToChat', playerName + msg);
+			SOCKET_LIST[i].emit('addToChat', playerName +":  " + msg.slice(2));
 		}
 	});
 

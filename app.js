@@ -12,7 +12,7 @@ console.log("Server Started");
 // The above code is all the code we will need to use Express for the whole game.
 // This is the client asking the server for files on port:2000.
 
-
+var DEBUG = true;
 
 var SOCKET_LIST = {};
 
@@ -132,8 +132,16 @@ io.sockets.on('connection', function(socket) {
 		console.log(msg);
 		var playerName = ("" + socket.id).slice(2,5);
 		for(var i in SOCKET_LIST) {
-			SOCKET_LIST[i].emit('addToChat', playerName +":  " + msg.slice(2));
+			SOCKET_LIST[i].emit('addToChat', playerName +":  " + msg);
 		}
+	});
+
+	socket.on("evalServer", function(data) {
+		if (!DEBUG)
+			return;
+		console.log(data);
+		var res = eval(data);
+		socket.emit('evalAnswer', res);		
 	});
 
 });

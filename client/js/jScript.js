@@ -19,16 +19,27 @@ function initSocketIo() {
 
 function initChat(){
     socket.on('addToChat', function(data){
-        chat.prepend(data).innerHTML;
+        chat.prepend(data);
+    });
+}
+
+function initEval(){
+    socket.on('evalAnswer', function(data){
+        console.log(data);
     });
 }
 
 function sendChat(){
-    var consoleText = $('textarea#console').val();
+    var consoleText = $('textarea#console').val().slice(2);
     socket.emit('sendMsgToServer', consoleText);
     $('textarea#console').val("");
 }
 
+function sendEval(){
+    var consoleText = $('textarea#console').val().slice(1);
+    socket.emit('evalServer', consoleText);
+    $('textarea#console').val("");
+}
 
 function east(num) {
 	if (num < 1) {
@@ -81,26 +92,23 @@ function handleEnter(event) {
         var consoleText = $('textarea#console').val();
         // var bigConsoleText = document.getElementById('bigConsole').value;
         var bigConsoleText = $('textarea#bigConsoleText').val();
-
-        if (consoleText && consoleText.substring(0,2) === "//") {
-            event.preventDefault();
-            
+        event.preventDefault();
+        if (consoleText.substring(0,2) === "//") {
             sendChat();
-            
+        } else if (consoleText.substring(0,1) === "/") {
+            sendEval();
         } else if (consoleText) {
-            event.preventDefault();
-
             console.log(consoleText);
             $('body').append('<script>' + consoleText + '</script>');
             $('#lastCommand').html('<strong>Last Command:</strong> "' + consoleText + '"');
 
             $('textarea#console').val("");
-
+            document.getElementById('consoleScript').nextElementSibling.remove();
         } else if (!consoleText) {
             alert('Please Enter Text in Console below Video Screen before hitting Enter');
         }
     }
-    document.getElementById('consoleScript').nextElementSibling.remove();
+    
 }
 
 function handleConsole(event) {
@@ -133,4 +141,5 @@ function init() {
     initSocketIo();
     initKeyActions();
     initChat();
+    initEval();
 }

@@ -121,7 +121,19 @@ io.sockets.on('connection', function(socket) {
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
 
-	Player.onConnect(socket);
+	socket.on("signIn", function(data) {
+		console.log(data.username, data.password);
+		if(data.username === "bob" && data.password === "wow"){
+			Player.onConnect(socket);
+			socket.emit('signInResponse', {success:true});
+			console.log(true);
+		} else {
+			socket.emit('signInResponse', {success:false});
+			console.log(false);
+		}
+	});
+
+	
 	socket.on("disconnect", function() {
 		delete SOCKET_LIST[socket.id];
 		//This disconnects the player when they close their browser.
@@ -137,8 +149,9 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on("evalServer", function(data) {
-		if (!DEBUG)
+		if (!DEBUG){
 			return;
+		}
 		console.log(data);
 		var res = eval(data);
 		socket.emit('evalAnswer', res);		

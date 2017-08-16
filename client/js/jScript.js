@@ -15,7 +15,36 @@ function initSocketIo() {
             ctx.fillText(".", 20, 20);
         }
     });
+} 
+
+    var signDivSignIn = $('#signIn');
+    var signDivSignUp = document.getElementById('signUp');
+    var signDivPassword = document.getElementById('password');
+    var signDivUserName = document.getElementById('userName');
+    var signDivEmail = document.getElementById('email');
+    var signDiv = document.getElementById('logonDisplay');
+
+    signDivSignIn.click(function(event){
+        event.preventDefault();
+        socket.emit('signIn', {username:signDivUserName.value, password:signDivPassword.value});
+    });
+
+function initSignIn(){
+    
+    socket.on('signInResponse', function(data){
+        console.log(data);
+        if(data.success){
+            logonDisplay.style.display = "none";
+            gameDisplay.style.display = "inline-block";
+        } else {
+            alert("Sign In Unsuccessful");
+        }
+    });
 }
+
+
+
+
 
 function initChat(){
     socket.on('addToChat', function(data){
@@ -142,4 +171,5 @@ function init() {
     initKeyActions();
     initChat();
     initEval();
+    initSignIn();
 }

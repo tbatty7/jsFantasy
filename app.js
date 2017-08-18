@@ -140,7 +140,7 @@ var isUsernameTaken = function(data, cb){
 var addUser = function(data, cb){
 	setTimeout(function(){
 		USERS[data.username] = data.password;
-		// cb();  If left here, it crashes server.
+		cb();  
 	}, 10);
 
 }
@@ -172,9 +172,10 @@ io.sockets.on('connection', function(socket) {
 				socket.emit('signUpResponse', {success:false});
 				console.log(false);
 			} else {
-				addUser(data);
-				socket.emit('signUpResponse', {success:true});
-				console.log(true);
+				addUser(data, function(){
+					socket.emit('signUpResponse', {success:true});
+					console.log(true);
+				});
 			}
 		});
 	});

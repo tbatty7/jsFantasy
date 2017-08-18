@@ -123,16 +123,26 @@ var USERS = {
 	"kim": "yay"
 }
 
-var isValidPassword = function(data){
-	return USERS[data.username] === data.password;
+var isValidPassword = function(data, cb){ // cb is callback
+	setTimeout(function(){ // setTimeout is simulating mongolDB.
+		cb(USERS[data.username] === data.password);
+// callbacks are used to return data that is delayed from server.
+	}, 10);
 }
 
-var isUsernameTaken = function(data){
-	return USERS[data.username];
+var isUsernameTaken = function(data, cb){
+	setTimeout(function(){
+		cb(USERS[data.username]);
+	}, 10);
+
 }
 
-var addUser = function(data){
-	USERS[data.username] = data.password;
+var addUser = function(data, cb){
+	setTimeout(function(){
+		USERS[data.username] = data.password;
+		// cb();  If left here, it crashes server.
+	}, 10);
+
 }
 
 
@@ -143,26 +153,30 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on("signIn", function(data) {
 		console.log(data.username, data.password);
-		if(isValidPassword(data)){
-			Player.onConnect(socket);
-			socket.emit('signInResponse', {success:true});
-			console.log(true);
-		} else {
-			socket.emit('signInResponse', {success:false});
-			console.log(false);
-		}
+		isValidPassword(data, function(res){
+			if(res){
+				Player.onConnect(socket);
+				socket.emit('signInResponse', {success:true});
+				console.log("signInResponse", true);
+			} else {
+				socket.emit('signInResponse', {success:false});
+				console.log("signInResponse", false);
+			}
+		});
 	});
 
 	socket.on("signUp", function(data) {
 		console.log(data.username, data.password);
-		if(isUsernameTaken(data)){
-			socket.emit('signUpResponse', {success:false});
-			console.log(false);
-		} else {
-			addUser(data);
-			socket.emit('signUpResponse', {success:true});
-			console.log(true);
-		}
+		isUsernameTaken(data, function(res){
+			if(res){
+				socket.emit('signUpResponse', {success:false});
+				console.log(false);
+			} else {
+				addUser(data);
+				socket.emit('signUpResponse', {success:true});
+				console.log(true);
+			}
+		});
 	});
 
 	

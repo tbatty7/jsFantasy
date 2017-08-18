@@ -18,7 +18,7 @@ function initSocketIo() {
 } 
 
     var signDivSignIn = $('#signIn');
-    var signDivSignUp = document.getElementById('signUp');
+    var signDivSignUp = $('#signUp');
     var signDivPassword = document.getElementById('password');
     var signDivUserName = document.getElementById('userName');
     var signDivEmail = document.getElementById('email');
@@ -29,15 +29,34 @@ function initSocketIo() {
         socket.emit('signIn', {username:signDivUserName.value, password:signDivPassword.value});
     });
 
+    signDivSignUp.click(function(event){
+        event.preventDefault();
+        socket.emit('signUp', {username:signDivUserName.value, password:signDivPassword.value});
+    });
+
 function initSignIn(){
     
     socket.on('signInResponse', function(data){
         console.log(data);
         if(data.success){
             logonDisplay.style.display = "none";
-            gameDisplay.style.display = "inline-block";
+            gameDisplay.style.display = "block";
+
         } else {
             alert("Sign In Unsuccessful");
+        }
+    });
+}
+
+function initSignUp(){
+    
+    socket.on('signUpResponse', function(data){
+        console.log(data);
+        if(data.success){
+            alert("Sign Up Successful");
+
+        } else {
+            alert("User Name Taken");
         }
     });
 }
@@ -172,4 +191,5 @@ function init() {
     initChat();
     initEval();
     initSignIn();
+    initSignUp();
 }

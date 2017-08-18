@@ -116,6 +116,26 @@ Player.update = function(){
 	return pack;	
 }
 
+var USERS = {
+// username:password for each player
+	"bob": "wow",
+	"rob": "hey",
+	"kim": "yay"
+}
+
+var isValidPassword = function(data){
+	return USERS[data.username] === data.password;
+}
+
+var isUsernameTaken = function(data){
+	return USERS[data.username];
+}
+
+var addUser = function(data){
+	USERS[data.username] = data.password;
+}
+
+
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket) {
 	socket.id = Math.random();
@@ -123,13 +143,25 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on("signIn", function(data) {
 		console.log(data.username, data.password);
-		if(data.username === "bob" && data.password === "wow"){
+		if(isValidPassword(data)){
 			Player.onConnect(socket);
 			socket.emit('signInResponse', {success:true});
 			console.log(true);
 		} else {
 			socket.emit('signInResponse', {success:false});
 			console.log(false);
+		}
+	});
+
+	socket.on("signUp", function(data) {
+		console.log(data.username, data.password);
+		if(isUsernameTaken(data)){
+			socket.emit('signUpResponse', {success:false});
+			console.log(false);
+		} else {
+			addUser(data);
+			socket.emit('signUpResponse', {success:true});
+			console.log(true);
 		}
 	});
 

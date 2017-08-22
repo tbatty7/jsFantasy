@@ -1,3 +1,5 @@
+var mongojs = require("mongojs");
+var db = mongojs('localhost:27017/jsGame', ['account','progress']);
 var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
@@ -124,24 +126,34 @@ var USERS = {
 }
 
 var isValidPassword = function(data, cb){ // cb is callback
-	setTimeout(function(){ // setTimeout is simulating mongolDB.
-		cb(USERS[data.username] === data.password);
+	db.account.find({username:data.username,password:data.password}, function(err, res){
+		//connecting to mongoDB server
+		if (res.length > 0) { // The find function returns an array
+			cb(true);
+		} else {
+			cb(false);
+		}
+	});
 // callbacks are used to return data that is delayed from server.
-	}, 10);
 }
 
 var isUsernameTaken = function(data, cb){
-	setTimeout(function(){
-		cb(USERS[data.username]);
-	}, 10);
+	db.account.find({username:data.username}, function(err, res){
+		//connected to mongodb server
+		if (res.length > 0) { // The find function returns an array
+			cb(true);
+		} else {
+			cb(false);
+		}
+	});
 
 }
 
 var addUser = function(data, cb){
-	setTimeout(function(){
-		USERS[data.username] = data.password;
-		cb();  
-	}, 10);
+	//connecting to mongodb server
+	db.account.insert({username:data.username,password:data.password}, function(err){
+		cb();
+	});
 
 }
 
@@ -151,11 +163,11 @@ io.sockets.on('connection', function(socket) {
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
 
-	socket.on("signIn", function(data) {
+	socket.on("signIn", function(data) { // second parameter function is callback.  Needed for server to work.
 		console.log(data.username, data.password);
 		isValidPassword(data, function(res){
 			if(res){
-				Player.onConnect(socket);
+				Player.onConnect(socket); // Activates player character
 				socket.emit('signInResponse', {success:true});
 				console.log("signInResponse", true);
 			} else {

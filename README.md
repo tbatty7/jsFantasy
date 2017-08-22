@@ -6,11 +6,18 @@ with their own experiences, but with the ability to play against each other with
 play as a noob, with no risk to losing, or they can play with risk of losing a certain percent of their gold, or risk losing everything
 to death and respawning at the nearest town.
 
-I plan to include a number of other features.
+Right now you can use 4 commands from the command console:
+`north();`
+`south();`
+`east();`
+`west();`
 
 
 ## Developing jsFantasy
 
 1. **Install Dependencies**: `npm install`
 2. **Run Unit Tests**: `npm test`
-3. **Run Application Locally**: `npm run start`
+3. **Start Mongod**: In Windows, use cmd.exe shell and type `cd "C:\Program Files\MongoDB\Server\3.4\bin"` then type `mongod`
+4. **Start Mongo** Open another session of cmd.exe and type `cd "C:\Program Files\MongoDB\Server\3.4\bin"` then type `mongo`
+5. **Switch to jsGame database** In the mongo cmd session, type `use jsGame`
+6. **Run Application Locally**: `npm run start`

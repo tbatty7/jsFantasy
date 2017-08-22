@@ -15,6 +15,7 @@ Right now you can use 4 commands from the command console:
 
 ## Developing jsFantasy
 
+1. **Install MongoDB 3.4**: go to `https://www.mongodb.com/download-center#community` and install the current stable release (3.4.7 when I did it).
 1. **Install Dependencies**: `npm install`
 2. **Run Unit Tests**: `npm test`
 3. **Start Mongod**: In Windows, use cmd.exe shell and type `cd "C:\Program Files\MongoDB\Server\3.4\bin"` then type `mongod`

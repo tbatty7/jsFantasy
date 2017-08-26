@@ -35,6 +35,16 @@ var Entity = function(id){
 		self.x += self.stepSize;
 		self.y += self.stepSize;
 	}
+	self.getDistance = function(pt) {  // THis is necessary for collision
+		return Math.sqrt(Math.pow(self.x-pt.x,2) + Math.pow(self.y-pt.y,2));
+	// to use, create a loop like: 
+	// for(var i in Player.list) {
+	// 		var p = Player.list[i];
+	// 		if (self.getDistance(p) < 32) {
+	//			handle collision, ex: hp--;
+	// 		}	
+	// }
+	}
 	return self;
 }
 
@@ -78,8 +88,9 @@ var Player = function(id) { //This will create a player with this id
 
 Player.list = {};
 
-Player.onConnect = function(socket){
-	var player = Player(socket.id);	
+Player.onConnect = function(socket){// This creates player and add listener for movement.
+	var player = Player(socket.id);	// Calls the object constructor of the player, passing the Math.random
+	// number that was assigned to it on initial connection and then assigned the socket number.
 	socket.on('newPositions', function(data) {
 		console.log(data);
 // This changes the value of n,s,e,w in player object to the
@@ -221,7 +232,10 @@ io.sockets.on('connection', function(socket) {
 // THis iterates through player list updating position and allowing
 // you to see other players in your screen.
 setInterval(function(){
-	var pack = Player.update();
+	var pack = {
+	player: Player.update(), // This interates through for players and other entities.
+	// npc: // Add Npc list to animate characters.
+	}
 	
 	
 

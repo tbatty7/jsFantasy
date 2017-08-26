@@ -10,10 +10,14 @@ function initSocketIo() {
     socket = io();
     socket.on('newPositions', function (data) {
         ctx.clearRect(0, 0, 700, 400);
-        for (var i = 0; i < data.length; i++) {
-            ctx.fillText(data[i].number, data[i].x, data[i].y);
+        for (var i = 0; i < data.player.length; i++) {
+            ctx.fillText(data.player[i].number, data.player[i].x, data.player[i].y);
             ctx.fillText(".", 20, 20);
         }
+        // put another identical for loop here for npc animations:
+        // for (var i = 0; i < data.npc.length; i++) {
+        // ctx.fillRect(data.npc[i].x, data.npc[i].y, 20, 20);   
+        // }
     });
 } 
 

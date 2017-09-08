@@ -56,7 +56,7 @@ function initSocketIo() {
                     p.x = pack.x;
                 }
                 if (pack.y !== undefined) {
-                    p.y - pack.y;
+                    p.y = pack.y;
                 }
             }
         }

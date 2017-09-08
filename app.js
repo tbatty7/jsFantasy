@@ -10,7 +10,7 @@ app.get('/', function(req, res) {
 app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(2000);
-console.log("Server Started");
+console.log("Server Started, listening on localhost:2000");
 // The above code is all the code we will need to use Express for the whole game.
 // This is the client asking the server for files on port:2000.
 

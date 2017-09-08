@@ -83,10 +83,17 @@ var Player = function(id) { //This will create a player with this id
 		}
 	}
 	Player.list[id] = self;
+	initPack.player.push({
+		id:self.id,
+		x:self.x,
+		y:self.y,
+		number:self.number
+	});
 	return self;
 }
 
 Player.list = {};
+
 
 Player.onConnect = function(socket){// This creates player and add listener for movement.
 	var player = Player(socket.id);	// Calls the object constructor of the player, passing the Math.random
@@ -113,6 +120,7 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 
 Player.onDisconnect = function(socket){
 	delete Player.list[socket.id];
+	removePack.player.push(socket.id);
 }
 
 Player.update = function(){
@@ -121,12 +129,48 @@ Player.update = function(){
 		var player = Player.list[i];
 		player.updatePosition(); // This loop animates the moving of the character.
 			pack.push({
-			x:player.x,
-			y:player.y,
-			number:player.number
+				id:player.id,			
+				x:player.x,
+				y:player.y,
 		});
 	}
 	return pack;	
+}
+
+// NPC creation and info
+
+var NPC = function(id){
+	var self = Entity();
+	self.id = id; //You have to pass the id in this function
+	self.number = "" + Math.floor(10 * Math.random());
+	NPC.list[id] = self;
+	initPack.npc.push({
+		id:id,
+		x:self.x,
+		y:self.y
+	});
+	return self;
+};
+
+NPC.list = {};
+
+NPC.update = function(){
+	var pack = [];
+	for (var i in NPC.list) {
+		var npc = NPC.list[i];
+		npc.updatePosition();
+			if (npc.toRemove) {
+				delete NPC.list[i];
+				removePack.npc.push(npc.id);
+			} else {
+				pack.push({
+					id:npc.id,
+					x:npc.x,
+					y:npc.y
+				});
+			}
+	}
+	return pack;
 }
 
 var USERS = {
@@ -229,21 +273,28 @@ io.sockets.on('connection', function(socket) {
 
 });
 
+var initPack = {player:[],npc:[]};
+var removePack = {player:[],npc:[]};
+
+
 // THis iterates through player list updating position and allowing
 // you to see other players in your screen.
 setInterval(function(){
 	var pack = {
 	player: Player.update(), // This interates through for players and other entities.
-	// npc: // Add Npc list to animate characters.
+	npc: NPC.update()// Add Npc list to animate characters.
 	}
-	
-	
 
 	for (var i in SOCKET_LIST){ //This is a loop to emit positions to client
 		var socket = SOCKET_LIST[i];
-		socket.emit('newPositions', pack) 
-		
+		socket.emit('init', initPack); 
+		socket.emit('update', pack); 
+		socket.emit('remove', removePack); 
 	}
+	initPack.player = [];  // This deletes the data from the pack so it is sending an
+	initPack.npc = [];     // empty array so you are not sending too much data.
+	removePack.player = [];// These are only needing to send data once.
+	removePack.npc = [];
 
 },1000/25);
 

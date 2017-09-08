@@ -1,24 +1,119 @@
 var socket;
 var ctx;
+var Player;
 
-function initCtx() {
+function initCtx() {  // Initializes canvas screen 
     ctx = document.getElementById("ctx").getContext("2d");
     ctx.font = '30px Arial';
 }
 
 function initSocketIo() {
     socket = io();
-    socket.on('newPositions', function (data) {
-        ctx.clearRect(0, 0, 700, 400);
+
+//init package - when new stuff created, contains all the data, sent only once
+
+    Player = function(initPack) {
+        var self = {};
+        self.id = initPack.id;
+        self.number = initPack.number;
+        self.x = initPack.x;
+        self.y = initPack.y;
+        Player.list[self.id] = self;
+        return self;
+    }
+    Player.list = {};
+
+    var NPC = function(initPack) {  // This is for NPCs.
+        var self = {};
+        self.id = initPack.id;
+        self.x = initPack.x;
+        self.y = initPack.y;
+        NPC.list[self.id] = self;
+        return self;
+    }
+    NPC.list = {};
+
+    socket.on('init', function(data){
         for (var i = 0; i < data.player.length; i++) {
-            ctx.fillText(data.player[i].number, data.player[i].x, data.player[i].y);
-            ctx.fillText(".", 20, 20);
+            new Player(data.player[i]);
         }
-        // put another identical for loop here for npc animations:
-        // for (var i = 0; i < data.npc.length; i++) {
-        // ctx.fillRect(data.npc[i].x, data.npc[i].y, 20, 20);   
-        // }
+        if (data.NPC !== undefined){
+            for (var i = 0; i < data.NPC.length; i++) {
+                new NPC(data.npc[i]);
+            }
+        }    
     });
+
+    //update package - only contains the difference, sent every frame
+
+    socket.on('update', function(data){
+        // data received will look like this: {player: [{id:123,x:0,y:0}, {id:222,x:0,y:2}], npc: [{id:a1,x:10,y:14}]}
+        for(var i = 0; i < data.player.length; i++) {
+            var pack = data.player[i];
+            var p = Player.list[pack.id];
+            if(p) {
+                if (pack.x !== undefined) {
+                    p.x = pack.x;
+                }
+                if (pack.y !== undefined) {
+                    p.y - pack.y;
+                }
+            }
+        }
+        
+        for(var i = 0; i < data.npc.length; i++) {
+            var pack = data.npc[i];
+            var n = NPC.list[pack.id];
+            if(n) {
+                if (pack.x !== undefined) {
+                    n.x = pack.x;
+                }
+                if (pack.y !== undefined) {
+                    n.y - pack.y;
+                }
+            }
+        }
+
+    });
+
+
+    //remove package - removes player or npc with id
+
+    socket.on('remove', function(data) {
+        // Data received will look like this: {player:[123],npc[a1]}
+        for (var i = 0; i < data.player.length; i++) {
+            delete Player.list[data.player[i]];
+        }
+        for (var i = 0; i < data.npc.length; i++) {
+            delete NPC.list[data.npc[i]];  // Do I want to delete NPCs?
+        }
+    });
+
+    // New animation loop
+
+    setInterval(function() {
+        ctx.clearRect(0,0,700,400);
+        for (var i in Player.list) {
+            ctx.fillText(Player.list[i].number, Player.list[i].x, Player.list[i].y);
+        }
+        for (var i in NPC.list) {
+            ctx.fillText(NPC.list[i].number, NPC.list[i].x, NPC.list[i].y);
+        }
+    }, 40);
+
+    // Old animation loop
+
+    // socket.on('newPositions', function (data) {
+    //     ctx.clearRect(0, 0, 700, 400);  //Creates canvas screen, sets size.
+    //     for (var i = 0; i < data.player.length; i++) {
+    //         ctx.fillText(data.player[i].number, data.player[i].x, data.player[i].y);
+    //         ctx.fillText(".", 20, 20);
+    //     }
+    //     // put another identical for loop here for npc animations:
+    //     // for (var i = 0; i < data.npc.length; i++) {
+    //         // ctx.fillRect(data.npc[i].x, data.npc[i].y, 20, 20);   
+    //     // }
+    // });
 } 
 
     var signDivSignIn = $('#signIn');

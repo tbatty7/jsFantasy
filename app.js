@@ -26,10 +26,21 @@ var Entity = function(id){
 		y: 200,
 		id: id,
 		stepSize: 20,
-		
+		xpGained: 0,
+		gainXp: 0,
 	}
 	self.update = function() {
 		self.updatePosition();
+		if (self.hp <= 0){  // What to do if player dies.
+			self.x = 340;
+			self.y = 200;
+			self.hp = 10;
+		}
+		if (self.gainXp){
+			self.xp += self.xpGained;
+			self.xpGained = 0;
+			self.gainXp = false;
+		}
 	}
 	self.updatePosition = function() {
 		self.x += self.stepSize;
@@ -41,7 +52,7 @@ var Entity = function(id){
 	// for(var i in Player.list) {
 	// 		var p = Player.list[i];
 	// 		if (self.getDistance(p) < 32) {
-	//			handle collision, ex: hp--;
+	//			handle collision, ex: start dialog sequence.
 	// 		}	
 	// }
 	}
@@ -58,6 +69,9 @@ var Player = function(id) { //This will create a player with this id
 	self.north = 200;
 	self.south = 200;
 	self.maxSpd = 5;
+	self.hp = 10;
+	self.hpMax = 10;
+	self.xp = 0;  // This will increase with any successful action.
 	self.updatePosition = function() {
 	// This method animates the movement by incrementing the x or
 	// y values until they match the increase to the new position 
@@ -88,15 +102,20 @@ var Player = function(id) { //This will create a player with this id
 			id:self.id,
 			x:self.x,
 			y:self.y,
-			number:self.number
+			number:self.number,
+			hp:self.hp,
+			hpMax:self.hpMax,
+			xp:self.xp,
 		};
 	}
 
-	self.getUpdatePack = function(){
+	self.getUpdatePack = function(){  // This is sent every frame, compression is important
 		return {
 			id:self.id,
 			x:self.x,
-			y:self.y
+			y:self.y,
+			hp:self.hp,
+			xp:self.xp,
 		};
 	}
 
@@ -170,6 +189,7 @@ var NPC = function(id){
 	var self = Entity();
 	self.id = id; //You have to pass the id in this function
 	self.number = "" + Math.floor(10 * Math.random());
+	self.toRemove = false;
 	self.getInitPack = function(){
 		return {
 			id:self.id,
@@ -195,6 +215,10 @@ var NPC = function(id){
 NPC.list = {};
 
 NPC.update = function(){
+	var town = false;  // This will have to be changed to make it work.
+	if (town) {
+		// put code to remove NPC if you leave a town by changing value to self.toRemove to true
+	}
 	var pack = [];
 	for (var i in NPC.list) {
 		var npc = NPC.list[i];

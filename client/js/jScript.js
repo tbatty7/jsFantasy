@@ -18,6 +18,17 @@ function initSocketIo() {
         self.number = initPack.number;
         self.x = initPack.x;
         self.y = initPack.y;
+        self.hp = initPack.hp;
+        self.hpMax = initPack.hpMax;
+        self.xp = initPack.xp;
+
+        self.draw = function(){
+            var hpWidth = 30 * self.hp / self.hpMax;
+            ctx.fillRect(self.x - hpWidth/2, self.y - 40, hpWidth, 4); // Draws hp bar over player
+            ctx.fillText(self.number, self.x, self.y);  // Draws player
+            ctx.fillText(self.xp,self.x,self.y-60);  // Draws XP number
+        }
+
         Player.list[self.id] = self;
         return self;
     }
@@ -28,6 +39,11 @@ function initSocketIo() {
         self.id = initPack.id;
         self.x = initPack.x;
         self.y = initPack.y;
+
+        self.draw = function(){
+            ctx.fillText(self.number, self.x, self.y);  // Draws player
+        }
+
         NPC.list[self.id] = self;
         return self;
     }
@@ -44,7 +60,7 @@ function initSocketIo() {
         }    
     });
 
-    //update package - only contains the difference, sent every frame
+    //update package - only contains the difference, sent every frame, only has data if a change happens.
 
     socket.on('update', function(data){
         // data received will look like this: {player: [{id:123,x:0,y:0}, {id:222,x:0,y:2}], npc: [{id:a1,x:10,y:14}]}
@@ -57,6 +73,12 @@ function initSocketIo() {
                 }
                 if (pack.y !== undefined) {
                     p.y = pack.y;
+                }
+                if (pack.hp !== undefined) {
+                    p.hp = pack.hp;
+                }
+                if (pack.xp !== undefined) {
+                    p.xp = pack.xp;
                 }
             }
         }
@@ -94,10 +116,10 @@ function initSocketIo() {
     setInterval(function() {
         ctx.clearRect(0,0,700,400);
         for (var i in Player.list) {
-            ctx.fillText(Player.list[i].number, Player.list[i].x, Player.list[i].y);
+            Player.list[i].draw();
         }
         for (var i in NPC.list) {
-            ctx.fillText(NPC.list[i].number, NPC.list[i].x, NPC.list[i].y);
+            NPC.list[i].draw();
         }
     }, 40);
 

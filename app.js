@@ -82,13 +82,27 @@ var Player = function(id) { //This will create a player with this id
 			console.log("X: " + self.x + " Y: " + self.y);
 		}
 	}
+
+	self.getInitPack = function(){
+		return {
+			id:self.id,
+			x:self.x,
+			y:self.y,
+			number:self.number
+		};
+	}
+
+	self.getUpdatePack = function(){
+		return {
+			id:self.id,
+			x:self.x,
+			y:self.y
+		};
+	}
+
 	Player.list[id] = self;
-	initPack.player.push({
-		id:self.id,
-		x:self.x,
-		y:self.y,
-		number:self.number
-	});
+
+	initPack.player.push(self.getInitPack());
 	return self;
 }
 
@@ -116,6 +130,23 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 			player.south += (data.endPosition * player.stepSize);
 		}
 	});
+
+
+	
+
+
+	socket.emit('init', {  // This allows you to see all the players that have already logged in.
+		player:Player.getAllInitPack(),
+		npcs:NPC.getAllInitPack()
+	});
+}
+
+Player.getAllInitPack = function(){
+	var players = [];
+	for (var i in Player.list)	{
+		players.push(Player.list[i].getInitPack());  // This gets the data from all the players currently online.
+	}	
+	return players;	
 }
 
 Player.onDisconnect = function(socket){
@@ -128,11 +159,7 @@ Player.update = function(){
 	for (var i in Player.list) {
 		var player = Player.list[i];
 		player.updatePosition(); // This loop animates the moving of the character.
-			pack.push({
-				id:player.id,			
-				x:player.x,
-				y:player.y,
-		});
+			pack.push(player.getUpdatePack());
 	}
 	return pack;	
 }
@@ -143,12 +170,25 @@ var NPC = function(id){
 	var self = Entity();
 	self.id = id; //You have to pass the id in this function
 	self.number = "" + Math.floor(10 * Math.random());
+	self.getInitPack = function(){
+		return {
+			id:self.id,
+			x:self.x,
+			y:self.y,
+			number:self.number
+		};
+	}
+
+	self.getUpdatePack = function(){
+		return {
+			id:player.id,
+			x:player.x,
+			y:player.y
+		};
+	}
+
 	NPC.list[id] = self;
-	initPack.npc.push({
-		id:id,
-		x:self.x,
-		y:self.y
-	});
+	initPack.npc.push(self.getInitPack());
 	return self;
 };
 
@@ -163,14 +203,18 @@ NPC.update = function(){
 				delete NPC.list[i];
 				removePack.npc.push(npc.id);
 			} else {
-				pack.push({
-					id:npc.id,
-					x:npc.x,
-					y:npc.y
-				});
+				pack.push(npc.getUpdatePack());
 			}
 	}
 	return pack;
+}
+
+NPC.getAllInitPack = function(){
+	var npcs = [];
+	for (var i in NPC.list)	{
+		npcs.push(NPC.list[i].getInitPack());  // This gets the data from all the players currently online.
+	}
+	return npcs;
 }
 
 var USERS = {

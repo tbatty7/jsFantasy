@@ -154,8 +154,9 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	
 
 
-	socket.emit('init', {  // This allows you to see all the players that have already logged in.
-		player:Player.getAllInitPack(),
+	socket.emit('init', {  
+		selfId:socket.id,  // The tells the client what player it is.
+		player:Player.getAllInitPack(),  // This allows you to see all the players that have already logged in.
 		npcs:NPC.getAllInitPack()
 	});
 }

@@ -1,10 +1,35 @@
 var socket;
+var Img;
 var ctx;
 var Player;
+var selfId = null;
+var screenWidth = 700;
+var screenHeight = 400;
 
 function initCtx() {  // Initializes canvas screen 
     ctx = document.getElementById("ctx").getContext("2d");
     ctx.font = '30px Arial';
+}
+
+function initImage() {
+    Img = {};
+    Img.player = new Image();
+    Img.player.src = '/client/img/player.png';
+    Img.npc = new Image();
+    Img.npc.src = '/client/img/soldier.png';
+    Img.map = new Image();
+    Img.map.src = '/client/img/village.png';
+}
+
+function drawMap() {
+    var x = screenWidth/2 - Player.list[selfId].x;
+    var y = screenHeight/2 - Player.list[selfId].y;
+    ctx.drawImage(Img.map,x,y);
+}
+
+function drawScore() {
+    ctx.fillStyle = 'white';
+    ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
 }
 
 function initSocketIo() {
@@ -23,10 +48,20 @@ function initSocketIo() {
         self.xp = initPack.xp;
 
         self.draw = function(){
-            var hpWidth = 30 * self.hp / self.hpMax;
-            ctx.fillRect(self.x - hpWidth/2, self.y - 40, hpWidth, 4); // Draws hp bar over player
-            ctx.fillText(self.number, self.x, self.y);  // Draws player
-            ctx.fillText(self.xp,self.x,self.y-60);  // Draws XP number
+            var x = self.x - Player.list[selfId].x + screenWidth/2;
+            var y = self.y - Player.list[selfId].y + screenHeight/2;
+
+            var hpWidth = 30 * self.hp / self.hpMax; 
+            ctx.fillStyle = 'red'; // Changes hp bar to red.
+            ctx.fillRect(x - hpWidth/2, y - 40, hpWidth, 4); // Draws hp bar over player
+
+            var width = Img.player.width*2;  // this is enlarging the player image
+            var height = Img.player. height*2; 
+
+
+            ctx.drawImage(Img.player,0,0,Img.player.width,Img.player.height,x-width/2,y-height/2,width,height);
+
+            // ctx.fillText(self.xp,self.x,self.y-60);  // Draws XP number above player.
         }
 
         Player.list[self.id] = self;
@@ -40,8 +75,12 @@ function initSocketIo() {
         self.x = initPack.x;
         self.y = initPack.y;
 
-        self.draw = function(){
-            ctx.fillText(self.number, self.x, self.y);  // Draws player
+        self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
+
+            var x = self.x - Player.list[selfId].x + screenWidth/2;
+            var y = self.y - Player.list[selfId].y + screenHeight/2;
+
+            ctx.fillText(self.number, x, y);  // Draws player
         }
 
         NPC.list[self.id] = self;
@@ -50,6 +89,10 @@ function initSocketIo() {
     NPC.list = {};
 
     socket.on('init', function(data){
+        if (data.selfId) {
+            selfId = data.selfId;
+        }
+
         for (var i = 0; i < data.player.length; i++) {
             new Player(data.player[i]);
         }
@@ -114,7 +157,12 @@ function initSocketIo() {
     // New animation loop
 
     setInterval(function() {
-        ctx.clearRect(0,0,700,400);
+        if (!selfId){
+            return;
+        }
+        ctx.clearRect(0,0,screenWidth,screenHeight);
+        drawMap();
+        drawScore();
         for (var i in Player.list) {
             Player.list[i].draw();
         }
@@ -123,19 +171,6 @@ function initSocketIo() {
         }
     }, 40);
 
-    // Old animation loop
-
-    // socket.on('newPositions', function (data) {
-    //     ctx.clearRect(0, 0, 700, 400);  //Creates canvas screen, sets size.
-    //     for (var i = 0; i < data.player.length; i++) {
-    //         ctx.fillText(data.player[i].number, data.player[i].x, data.player[i].y);
-    //         ctx.fillText(".", 20, 20);
-    //     }
-    //     // put another identical for loop here for npc animations:
-    //     // for (var i = 0; i < data.npc.length; i++) {
-    //         // ctx.fillRect(data.npc[i].x, data.npc[i].y, 20, 20);   
-    //     // }
-    // });
 } 
 
     var signDivSignIn = $('#signIn');
@@ -308,6 +343,7 @@ function initKeyActions() {
 function init() {
     initCtx();
     initSocketIo();
+    initImage();
     initKeyActions();
     initChat();
     initEval();

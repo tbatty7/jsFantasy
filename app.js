@@ -20,14 +20,25 @@ var SOCKET_LIST = {};
 
 var PLAYER_LIST = {}; // This contains all the players.
 
-var Entity = function(id){
+var Entity = function(param){
 	var self = {
 		x: 340,
 		y: 200,
-		id: id,
+		id: "",
 		stepSize: 20,
 		xpGained: 0,
 		gainXp: 0,
+		map: 'village',
+	}
+	if (param) {
+		if (param.x)
+			self.x = param.x;
+		if (param.y)
+			self.y = param.y;
+		if (param.map)
+			self.map = param.map;
+		if (param.id)
+			self.id = param.id; //You have to pass the id as an object for everything to work.
 	}
 	self.update = function() {
 		self.updatePosition();
@@ -60,9 +71,8 @@ var Entity = function(id){
 }
 
 
-var Player = function(id) { //This will create a player with this id
-	var self = Entity();
-	self.id = id; //You have to pass the id in this function
+var Player = function(param) { //This will create a player with the properties in the param object
+	var self = Entity(param);
 	self.number = "" + Math.floor(10 * Math.random());
 	self.east = 340;
 	self.west = 340;
@@ -106,6 +116,7 @@ var Player = function(id) { //This will create a player with this id
 			hp:self.hp,
 			hpMax:self.hpMax,
 			xp:self.xp,
+			map:self.map,
 		};
 	}
 
@@ -119,7 +130,7 @@ var Player = function(id) { //This will create a player with this id
 		};
 	}
 
-	Player.list[id] = self;
+	Player.list[self.id] = self;
 
 	initPack.player.push(self.getInitPack());
 	return self;
@@ -129,8 +140,15 @@ Player.list = {};
 
 
 Player.onConnect = function(socket){// This creates player and add listener for movement.
-	var player = Player(socket.id);	// Calls the object constructor of the player, passing the Math.random
-	// number that was assigned to it on initial connection and then assigned the socket number.
+	var map = 'village';
+	if (Math.random() < 0.5) {
+		map = 'house1';
+	}
+	var player = Player({
+		id:socket.id,
+		map:map, // This map:map overrides the default map in the Entity object with the variable above.
+	});	// Player() Calls the object constructor of the player, passing the Math.random
+	// number that was assigned to the socket number as the id.  It is passed as an object.
 	socket.on('newPositions', function(data) {
 		console.log(data);
 // This changes the value of n,s,e,w in player object to the
@@ -186,9 +204,8 @@ Player.update = function(){
 
 // NPC creation and info
 
-var NPC = function(id){
-	var self = Entity();
-	self.id = id; //You have to pass the id in this function
+var NPC = function(param){
+	var self = Entity(param);
 	self.number = "" + Math.floor(10 * Math.random());
 	self.toRemove = false;
 	self.getInitPack = function(){

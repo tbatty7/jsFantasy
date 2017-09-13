@@ -14,17 +14,21 @@ function initCtx() {  // Initializes canvas screen
 function initImage() {
     Img = {};
     Img.player = new Image();
-    Img.player.src = '/client/img/player.png';
+    Img.player.src = '/client/img/one-player.png';
     Img.npc = new Image();
-    Img.npc.src = '/client/img/soldier.png';
-    Img.map = new Image();
-    Img.map.src = '/client/img/village.png';
+    Img.npc.src = '/client/img/one-soldier.png';
+    Img.map = {};
+    Img.map['village'] = new Image();
+    Img.map['village'].src = '/client/img/village.png';
+    Img.map['house1'] = new Image();
+    Img.map['house1'].src = '/client/img/house1.png';
 }
 
 function drawMap() {
-    var x = screenWidth/2 - Player.list[selfId].x;
-    var y = screenHeight/2 - Player.list[selfId].y;
-    ctx.drawImage(Img.map,x,y);
+    var player = Player.list[selfId];  // The selfId tells the client which player is logged.
+    var x = screenWidth/2 - player.x;
+    var y = screenHeight/2 - player.y;
+    ctx.drawImage(Img.map[player.map],x,y);  // this draws the map for the logged player.
 }
 
 function drawScore() {
@@ -46,8 +50,12 @@ function initSocketIo() {
         self.hp = initPack.hp;
         self.hpMax = initPack.hpMax;
         self.xp = initPack.xp;
+        self.map = initPack.map;
 
         self.draw = function(){
+            if(Player.list[selfId].map !== self.map){
+                return;
+            }
             var x = self.x - Player.list[selfId].x + screenWidth/2;
             var y = self.y - Player.list[selfId].y + screenHeight/2;
 
@@ -55,8 +63,8 @@ function initSocketIo() {
             ctx.fillStyle = 'red'; // Changes hp bar to red.
             ctx.fillRect(x - hpWidth/2, y - 40, hpWidth, 4); // Draws hp bar over player
 
-            var width = Img.player.width*2;  // this is enlarging the player image
-            var height = Img.player. height*2; 
+            var width = Img.player.width;  //  this is where you can enlarge or shrink the player image
+            var height = Img.player.height; // by multiplying or dividing the width and height by 2 or more
 
 
             ctx.drawImage(Img.player,0,0,Img.player.width,Img.player.height,x-width/2,y-height/2,width,height);
@@ -74,9 +82,12 @@ function initSocketIo() {
         self.id = initPack.id;
         self.x = initPack.x;
         self.y = initPack.y;
+        self.map = initPack.map;
 
         self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
-
+            if(Player.list[selfId].map !== self.map){
+                return;
+            }
             var x = self.x - Player.list[selfId].x + screenWidth/2;
             var y = self.y - Player.list[selfId].y + screenHeight/2;
 

@@ -47,8 +47,9 @@
 					</form>
 					
 				</div>
-
-				<div id="gameDisplay" class="row" style="display: none;">
+			<div id="gameDisplay" style="display: none;">
+				
+				<div class="row">
 					<div class="col-xs-1 ">
 						<div class="alert alert-success" style="height: 400px">
 						
@@ -74,30 +75,31 @@
 					</div>
 				</div>
 
-			<div class="row">
-				<div class="col-xs-1 alert alert-info">
-				notes
-				</div>
-				<div class="col-xs-7">
-					<div class="alert alert-info">
-						<form class="form-inline">
-							<div class="form-group" onsubmit="handle">
-								<textarea class="input-lg form-control" placeholder="This is the console.  Type your commands here.  Use '//' to chat." style="width: 725px; font-family: monospace;" id="console" rows="1"></textarea>
-								
-							</div>
-						</form>
-					<p class="h3" id="lastCommand"><strong>Last Command:</strong></p>
-
+				<div class="row">
+					<div class="col-xs-1 alert alert-info">
+					notes
 					</div>
-					
-				</div>
+					<div class="col-xs-7">
+						<div class="alert alert-info">
+							<form class="form-inline">
+								<div class="form-group" onsubmit="handle">
+									<textarea class="input-lg form-control" placeholder="This is the command console.  Use '//' to chat." style="width: 730px; font-family: monospace;" id="console" rows="1" autofocus></textarea>
+									
+								</div>
+							</form>
+						<p class="h3" id="lastCommand"><strong>Last Command:</strong></p>
 
-				<div id="chat" class="col-xs-4 alert alert-success" style="height: 140px; overflow-y: scroll">
-					<p>Welcome to Chat!</p>
+						</div>
+						
+					</div>
+
+					<div id="chat" class="col-xs-4 alert alert-success" style="height: 140px; overflow-y: scroll">
+						<p>Welcome to Chat!</p>
+					</div>
 				</div>
 			</div>
-		</div>
 
+		</div>
 
 
 

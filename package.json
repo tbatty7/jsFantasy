@@ -11,7 +11,7 @@
     "socket.io": "^2.0.3"
   },
   "engines": {
-    "node": "4.5.x"
+    "node": "4.1.x"
   },
   "devDependencies": {
     "chai": "^4.1.1",

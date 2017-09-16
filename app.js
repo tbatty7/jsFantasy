@@ -1,15 +1,17 @@
 var mongojs = require("mongojs");
-var db = mongojs('localhost:27017/jsGame', ['account','progress']);
+// var db = mongojs('localhost:27017/jsGame', ['account','progress']);
+var db = mongojs(process.env.MONGODB_URI || 'localhost:27017/jsGame', ['account','progress']);
 var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
+var port = process.env.PORT || 2000;
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
 });
 app.use('/client', express.static(__dirname + '/client'));
 
-serv.listen(2000);
+serv.listen(port);
 console.log("Server Started, listening on localhost:2000");
 // The above code is all the code we will need to use Express for the whole game.
 // This is the client asking the server for files on port:2000.

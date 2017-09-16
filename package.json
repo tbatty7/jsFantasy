@@ -10,6 +10,9 @@
     "sinon-chai": "^2.12.0",
     "socket.io": "^2.0.3"
   },
+  "engines": {
+    "node": "4.5.x"
+  },
   "devDependencies": {
     "chai": "^4.1.1",
     "chai-jquery": "^2.0.0",

@@ -4,6 +4,9 @@ var db = mongojs(process.env.MONGODB_URI || 'localhost:27017/jsGame', ['account'
 var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
+var fs = require('fs');  // This is File System, to create files. Comes natively with Node.
+// To use, type fs.writeFile('./client/directory and file name', content to add); -- Use for creating journal
+
 var port = process.env.PORT || 2000;
 
 app.get('/', function(req, res) {
@@ -83,6 +86,7 @@ var Player = function(param) { //This will create a player with the properties i
 	self.maxSpd = 5;
 	self.hp = 10;
 	self.hpMax = 10;
+	self.intro = false;  // This determines if the intro sequence runs.
 	self.xp = 0;  // This will increase with any successful action.
 	self.updatePosition = function() {
 	// This method animates the movement by incrementing the x or
@@ -271,7 +275,7 @@ var USERS = {
 var isValidPassword = function(data, cb){ // cb is callback
 	db.account.find({username:data.username,password:data.password}, function(err, res){
 		//connecting to mongoDB server
-		if (res.length > 0) { // The find function returns an array
+		if (res.length > 0) { // The find function returns an array with the username and password.
 			cb(true);
 		} else {
 			cb(false);
@@ -283,7 +287,7 @@ var isValidPassword = function(data, cb){ // cb is callback
 var isUsernameTaken = function(data, cb){
 	db.account.find({username:data.username}, function(err, res){
 		//connected to mongodb server
-		if (res.length > 0) { // The find function returns an array
+		if (res.length > 0) { // The find function returns an array with the username
 			cb(true);
 		} else {
 			cb(false);
@@ -297,8 +301,25 @@ var addUser = function(data, cb){
 	db.account.insert({username:data.username,password:data.password}, function(err){
 		cb();
 	});
-
+	db.progress.insert({username:data.username,xp:0,intro:true}, function(err){
+		cb();
+	})
 }
+
+var checkIntro = function(data, cb){
+	//connecting to mongodb to see if I need to run intro.
+	db.progress.find({username:data.username}, function(err, res){
+		if (res[0].intro){
+			cb(true);
+			console.log('database intro true')
+		} else {
+			cb(false);
+			console.log('Database intro false');
+			console.log(res);
+		}
+	});
+}
+
 
 
 var io = require('socket.io')(serv,{});
@@ -311,8 +332,19 @@ io.sockets.on('connection', function(socket) {
 		isValidPassword(data, function(res){
 			if(res){
 				Player.onConnect(socket); // Activates player character
-				socket.emit('signInResponse', {success:true});
 				console.log("signInResponse", true);
+
+				checkIntro(data, function(res){
+					if(res){
+						console.log("Sending Intro emit package");
+						socket.emit('signInResponse', {success:true,intro:true});
+					} else {
+						console.log('Intro was false')
+						console.log(res);
+						socket.emit('signInResponse', {success:true,intro:false});
+					}
+				});
+
 			} else {
 				socket.emit('signInResponse', {success:false});
 				console.log("signInResponse", false);

@@ -49,6 +49,7 @@ function initSocketIo() {
         self.y = initPack.y;
         self.hp = initPack.hp;
         self.hpMax = initPack.hpMax;
+        self.intro = false;
         self.xp = initPack.xp;
         self.map = initPack.map;
 
@@ -189,7 +190,6 @@ function initSocketIo() {
     var signDivPassword = document.getElementById('password');
     var signDivUserName = document.getElementById('userName');
     var signDivEmail = document.getElementById('email');
-    var signDiv = document.getElementById('logonDisplay');
 
     signDivSignIn.click(function(event){
         event.preventDefault();
@@ -206,9 +206,15 @@ function initSignIn(){
     socket.on('signInResponse', function(data){
         console.log(data);
         if(data.success){
-            logonDisplay.style.display = "none";
-            gameDisplay.style.display = "block";
+                logonDisplay.style.display = "none";
+            if(data.intro){
+                console.log("ready to Play Intro");
+                playIntro1();//code that runs intro
 
+            } else{
+                gameDisplay.style.display = "block";  // This should be called after intro.
+                
+            }
         } else {
             alert("Sign In Unsuccessful");
         }
@@ -228,9 +234,50 @@ function initSignUp(){
     });
 }
 
+//  INTRO  //
 
+function playIntro1(){
+    var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
+    div.style.display = "block";
+    // div.style.width = '900px';
+    // div.style.height = '500px';
+    div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
+    '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
+    '<h3>Old Man: Easy now, there has been a terrible accident, and you were hurt.</h3><h3>You: Where are my friends and family?</h3>'+
+    '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +
+    '<h3>Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.</h3>' +
+    '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
+    '<button type="button" class="btn btn-warning" onclick="playIntro2()">Continue</button>';
+}
 
+function playIntro2(){
+    var div = document.getElementById('dialog');
+    div.innerHTML = '<h3>Old Man: It\'s strange... I see something in you.</h3>' +
+    '<h3>You: What do you mean?</h3><h3>Old Man: I see a glimmer in your eyes. You have code, my friend.</h3><h3>You: Code? What is that?</h3>' +
+    '<h3>Old Man: It is what we magicians call magic.  Magic is a lot like writing computer code, in fact, it is almost exactly like it, and you can even get a good job if you know how to use it.</h3>' +
+    '<h3>You: Magic? Can that heal me so I can walk again?</h3><h3>Old Man: Unfortunately, no.  But I will teach you some spells so you can move around.</h3>' +
+    '<h3>You: Okay. Do I have to call you master?</h3><h3>Old Man: Only if it helps with your training.  Let\'s begin.  Spells are in the form of functions and the first four are north(); south(); east(); and west();...</h3>' +
+    '<button type="button" class="btn btn-warning" onclick="playIntro3()">Continue</button>';
+}
 
+function playIntro3(){
+    var div = document.getElementById('dialog');
+    div.innerHTML = '<h1>Lesson One: Functions</h1><h4>Functions are the basic building blocks of JavaScript.</h4>' +
+    '<h4>They are the commands that tell the computer what to do.</h4><h4>There are some built in functions in JavaScript, but most of them you need to create in order to use.</h4>' +
+    '<h4>To use a function, you need to call it.  You can call a function by typing the function name, and then parenthesis and a semicolon.</h4>' +
+    '<h4>Before we start creating functions, we will get some practise just calling them.</h4><h4>To move your character, type <code>east();</code> in the command console.</h4>' +
+    '<h4>You can call the other functions north(); south(); and west(); in the same way.</h4><h4>You can also type a number in the parenthesis like this: <code>north(4);</code></h4>' +
+    '<h4>This is called passing an argument into a function.  We will talk more about how to create a function so it accepts arguments in a later lesson.</h4>' +
+    '<h4>The number you pass as an argument in this function will tell the function how many steps you want to move.  Try it now by clicking the button below and typing it in the command console.</h4>' +
+    '<h4>Use the direction functions to go out the door of the hut</h4>' +
+    '<button type="button" class="btn btn-success" onclick="endIntro()">Go to Game</button>';
+}
+
+function endIntro(){
+    var div = document.getElementById('dialog');
+    div.style.display = "none";
+    gameDisplay.style.display = "block"; 
+}
 
 function initChat(){
     socket.on('addToChat', function(data){

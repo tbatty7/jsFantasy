@@ -33,15 +33,18 @@ var Entity = function(param){
 		stepSize: 20,
 		xpGained: 0,
 		gainXp: 0,
-		map: 'village',
+		mapFloor: 'villageFloor',
+		mapCeiling: 'villageCeiling',
 	}
 	if (param) {
 		if (param.x)
 			self.x = param.x;
 		if (param.y)
 			self.y = param.y;
-		if (param.map)
-			self.map = param.map;
+		if (param.mapFloor)
+			self.mapFloor = param.mapFloor;
+		if (param.mapCeiling)
+			self.mapCeiling = param.mapCeiling;
 		if (param.id)
 			self.id = param.id; //You have to pass the id as an object for everything to work.
 	}
@@ -122,7 +125,8 @@ var Player = function(param) { //This will create a player with the properties i
 			hp:self.hp,
 			hpMax:self.hpMax,
 			xp:self.xp,
-			map:self.map,
+			mapFloor:self.mapFloor,
+			mapCeiling:self.mapCeiling,
 		};
 	}
 
@@ -133,6 +137,8 @@ var Player = function(param) { //This will create a player with the properties i
 			y:self.y,
 			hp:self.hp,
 			xp:self.xp,
+			mapFloor:self.mapFloor,
+			mapCeiling:self.mapCeiling,
 		};
 	}
 
@@ -146,13 +152,12 @@ Player.list = {};
 
 
 Player.onConnect = function(socket){// This creates player and add listener for movement.
-	var map = 'village';
-	if (Math.random() < 0.5) {
-		map = 'house1';
-	}
+	var mapFloor = 'villageFloor'; // This will need to change.
+	var mapCeiling = 'villageCeiling'
 	var player = Player({
 		id:socket.id,
-		map:map, // This map:map overrides the default map in the Entity object with the variable above.
+		mapCeiling:mapCeiling,
+		mapFloor:mapFloor, // This overrides the default map in the Entity object with the variable above.
 	});	// Player() Calls the object constructor of the player, passing the Math.random
 	// number that was assigned to the socket number as the id.  It is passed as an object.
 	socket.on('newPositions', function(data) {
@@ -175,7 +180,10 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	});
 
 
-	
+	socket.on('changeMap', function(data){
+		player.mapFloor = data.mapFloor;
+		player.mapCeiling = data.mapCeiling;
+	});
 
 
 	socket.emit('init', {  

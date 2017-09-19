@@ -14,21 +14,33 @@ function initCtx() {  // Initializes canvas screen
 function initImage() {
     Img = {};
     Img.player = new Image();
-    Img.player.src = '/client/img/one-player.png';
+    Img.player.src = '/client/img/one-soldier.png';
     Img.npc = new Image();
     Img.npc.src = '/client/img/one-soldier.png';
-    Img.map = {};
-    Img.map['village'] = new Image();
-    Img.map['village'].src = '/client/img/village.png';
-    Img.map['house1'] = new Image();
-    Img.map['house1'].src = '/client/img/house1.png';
+    Img.mapFloor = {};
+    Img.mapFloor['villageFloor'] = new Image();
+    Img.mapFloor['villageFloor'].src = '/client/img/village.png';
+    Img.mapFloor['house1Floor'] = new Image();
+    Img.mapFloor['house1Floor'].src = '/client/img/house1floor.png';
+    Img.mapCeiling = {};
+    Img.mapCeiling['villageCeiling'] = new Image();
+    Img.mapCeiling['villageCeiling'].src = '/client/img/blankmap.png';  // Need to add something here?  Treetops?
+    Img.mapCeiling['house1Ceiling'] = new Image();
+    Img.mapCeiling['house1Ceiling'].src = '/client/img/house1ceiling.png';
 }
 
-function drawMap() {
+function drawMapFloor() {
     var player = Player.list[selfId];  // The selfId tells the client which player is logged.
     var x = screenWidth/2 - player.x;
     var y = screenHeight/2 - player.y;
-    ctx.drawImage(Img.map[player.map],x,y);  // this draws the map for the logged player.
+    ctx.drawImage(Img.mapFloor[player.mapFloor],x,y);  // this draws the map for the logged player.
+}
+
+function drawMapCeiling() {
+    var player = Player.list[selfId];  // The selfId tells the client which player is logged.
+    var x = screenWidth/2 - player.x;
+    var y = screenHeight/2 - player.y;
+    ctx.drawImage(Img.mapCeiling[player.mapCeiling],x,y);  // this draws the map for the logged player.
 }
 
 function drawScore() {
@@ -51,10 +63,11 @@ function initSocketIo() {
         self.hpMax = initPack.hpMax;
         self.intro = false;
         self.xp = initPack.xp;
-        self.map = initPack.map;
+        self.mapFloor = initPack.mapFloor;
+        self.mapCeiling = initPack.mapCeiling;
 
         self.draw = function(){
-            if(Player.list[selfId].map !== self.map){
+            if(Player.list[selfId].mapFloor !== self.mapFloor){
                 return;
             }
             var x = self.x - Player.list[selfId].x + screenWidth/2;
@@ -83,10 +96,11 @@ function initSocketIo() {
         self.id = initPack.id;
         self.x = initPack.x;
         self.y = initPack.y;
-        self.map = initPack.map;
+        self.mapFloor = initPack.mapFloor;
+        self.mapCeiling = initPack.mapCeiling;
 
         self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
-            if(Player.list[selfId].map !== self.map){
+            if(Player.list[selfId].mapFloor !== self.mapFloor){
                 return;
             }
             var x = self.x - Player.list[selfId].x + screenWidth/2;
@@ -135,6 +149,12 @@ function initSocketIo() {
                 if (pack.xp !== undefined) {
                     p.xp = pack.xp;
                 }
+                if (pack.mapFloor !== undefined) {
+                    p.mapFloor = pack.mapFloor;
+                }
+                if (pack.mapCeiling !== undefined) {
+                    p.mapCeiling = pack.mapCeiling;
+                }
             }
         }
         
@@ -173,7 +193,7 @@ function initSocketIo() {
             return;
         }
         ctx.clearRect(0,0,screenWidth,screenHeight);
-        drawMap();
+        drawMapFloor();
         drawScore();
         for (var i in Player.list) {
             Player.list[i].draw();
@@ -181,6 +201,7 @@ function initSocketIo() {
         for (var i in NPC.list) {
             NPC.list[i].draw();
         }
+        drawMapCeiling();
     }, 40);
 
 } 
@@ -239,8 +260,6 @@ function initSignUp(){
 function playIntro1(){
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "block";
-    // div.style.width = '900px';
-    // div.style.height = '500px';
     div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
     '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
     '<h3>Old Man: Easy now, there has been a terrible accident, and you were hurt.</h3><h3>You: Where are my friends and family?</h3>'+
@@ -270,13 +289,36 @@ function playIntro3(){
     '<h4>This is called passing an argument into a function.  We will talk more about how to create a function so it accepts arguments in a later lesson.</h4>' +
     '<h4>The number you pass as an argument in this function will tell the function how many steps you want to move.  Try it now by clicking the button below and typing it in the command console.</h4>' +
     '<h4>Use the direction functions to go out the door of the hut</h4>' +
-    '<button type="button" class="btn btn-success" onclick="endIntro()">Go to Game</button>';
+    '<button type="button" class="btn btn-success" onclick="pauseIntro()">Go to Game</button>';
+}
+
+function pauseIntro(){
+    changeMap('house1Floor', 'house1Ceiling');
+    var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
+    div.style.display = "none";
+    gameDisplay.style.display = "block"; 
+}
+
+function secondIntro(){  // Have this called when there is a collision when the player connects with the door
+    changeMap('villageFloor', 'villageCeiling');
+    var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
+    div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
+    '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
+    '<h3>Old Man: Easy now, there has been a terrible accident, and you were hurt.</h3><h3>You: Where are my friends and family?</h3>'+
+    '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +
+    '<h3>Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.</h3>' +
+    '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
+    '<button type="button" class="btn btn-warning" onclick="playIntro2()">Continue</button>';
+    gameDisplay.style.display = "none"; 
+    div.style.display = "block";
 }
 
 function endIntro(){
     var div = document.getElementById('dialog');
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
+
+    // send back to server to tell it to change the intro: value to false in MongoDB.
 }
 
 function initChat(){
@@ -302,6 +344,13 @@ function sendEval(){
     socket.emit('evalServer', consoleText);
     $('textarea#console').val("");
 }
+
+//  UI  //
+
+function changeMap(mapFloor,mapCeiling,x,y){
+    socket.emit('changeMap', {mapFloor: mapFloor, mapCeiling: mapCeiling, x: x, y: y});
+}
+
 
 function east(num) {
 	if (num < 1) {

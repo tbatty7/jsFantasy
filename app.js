@@ -19,7 +19,7 @@ console.log("Server Started, listening on localhost:2000");
 // The above code is all the code we will need to use Express for the whole game.
 // This is the client asking the server for files on port:2000.
 
-var DEBUG = true;
+var DEBUG = false;
 
 var SOCKET_LIST = {};
 
@@ -70,6 +70,7 @@ var Entity = function(param){
 	self.updatePosition = function() {
 		self.x += self.stepSize;
 		self.y += self.stepSize;
+
 	}
 	self.getDistance = function(pt) {  // THis is necessary for collision
 		return Math.sqrt(Math.pow(self.x-pt.x,2) + Math.pow(self.y-pt.y,2));
@@ -92,12 +93,29 @@ var Player = function(param) { //This will create a player with the properties i
 	self.west = 340;
 	self.north = 200;
 	self.south = 200;
+	self.mapHeight = 960;
+	self.mapWidth = 960;
 	self.maxSpd = 5;
 	self.hp = 10;
 	self.hpMax = 10;
 	self.intro = false;  // This determines if the intro sequence runs.
 	self.xp = 0;  // This will increase with any successful action.
 	self.updatePosition = function() {
+		
+		// This tests for collision on the map edges
+		if (self.x < self.width/2){  // This was 0, but then the player would be half off the map since the x and y 
+			self.west = self.width/2;// centered on the player.  This way it stops at the edge of the map.
+		}
+		if (self.x > self.mapWidth-self.width/2){
+			self.east = self.mapWidth-self.width/2;
+		}
+		if (self.y < self.height/2){
+			self.north = self.height/2;
+		}
+		if (self.y > self.mapHeight-self.height/2){
+			self.south = self.mapHeight-self.height/2;
+		}
+
 	// This method animates the movement by incrementing the x or
 	// y values until they match the increase to the new position 
 	// parameter set in the direction functions.  I also had 
@@ -120,6 +138,9 @@ var Player = function(param) { //This will create a player with the properties i
 			self.north += self.maxSpd;
 			console.log("X: " + self.x + " Y: " + self.y);
 		}
+
+		// Collision testing
+
 	}
 
 	self.getInitPack = function(){
@@ -191,6 +212,8 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	socket.on('changeMap', function(data){
 		player.mapFloor = data.mapFloor;
 		player.mapCeiling = data.mapCeiling;
+		player.mapHeight = data.height;
+		player.mapWidth = data.width;
 	});
 
 

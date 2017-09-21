@@ -87,6 +87,8 @@ function initSocketIo() {
         self.xp = initPack.xp;
         self.mapFloor = initPack.mapFloor;
         self.mapCeiling = initPack.mapCeiling;
+        self.height = initPack.height;
+        self.width = initPack.width;
 
         self.draw = function(){
             if(Player.list[selfId].mapFloor !== self.mapFloor){
@@ -315,7 +317,7 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 'house1Ceiling');
+    changeMap('house1Floor', 'house1Ceiling', 960, 960);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
@@ -369,8 +371,8 @@ function sendEval(){
 
 //  UI  //
 
-function changeMap(mapFloor,mapCeiling,x,y){
-    socket.emit('changeMap', {mapFloor: mapFloor, mapCeiling: mapCeiling, x: x, y: y});
+function changeMap(mapFloor,mapCeiling,height,width,x,y){
+    socket.emit('changeMap', {mapFloor: mapFloor, mapCeiling: mapCeiling, height: height, width: width, x: x, y: y});
 }
 
 function testCollision(rect1, rect2){

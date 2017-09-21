@@ -35,6 +35,8 @@ var Entity = function(param){
 		gainXp: 0,
 		mapFloor: 'villageFloor',
 		mapCeiling: 'villageCeiling',
+		height: 50,
+		width: 40,
 	}
 	if (param) {
 		if (param.x)
@@ -45,6 +47,10 @@ var Entity = function(param){
 			self.mapFloor = param.mapFloor;
 		if (param.mapCeiling)
 			self.mapCeiling = param.mapCeiling;
+		if (param.width)
+			self.width = param.width;
+		if (param.height)
+			self.height = param.height;
 		if (param.id)
 			self.id = param.id; //You have to pass the id as an object for everything to work.
 	}
@@ -127,6 +133,8 @@ var Player = function(param) { //This will create a player with the properties i
 			xp:self.xp,
 			mapFloor:self.mapFloor,
 			mapCeiling:self.mapCeiling,
+			height:self.height,
+			width:self.width,
 		};
 	}
 

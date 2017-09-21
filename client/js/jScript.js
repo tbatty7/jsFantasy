@@ -317,7 +317,7 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 'house1Ceiling', 960, 960);
+    changeMap('house1Floor', 'house1Ceiling', 960, 960, 560, 425);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 

@@ -20,6 +20,8 @@ console.log("Server Started, listening on localhost:2000");
 // This is the client asking the server for files on port:2000.
 
 var DEBUG = false;
+var screenWidth = 700;
+var screenHeight = 400;
 
 var SOCKET_LIST = {};
 
@@ -103,17 +105,17 @@ var Player = function(param) { //This will create a player with the properties i
 	self.updatePosition = function() {
 		
 		// This tests for collision on the map edges
-		if (self.x < self.width/2){  // This was 0, but then the player would be half off the map since the x and y 
-			self.west = self.width/2;// centered on the player.  This way it stops at the edge of the map.
+		if (self.x < (self.width/2)+(screenWidth/2)){  // This was 0, but then the player would be half off the map since the x and y 
+			self.west = (self.width/2)+(screenWidth/2);// centered on the player.  This way it stops at the edge of the map.
 		}
-		if (self.x > self.mapWidth-self.width/2){
-			self.east = self.mapWidth-self.width/2;
+		if (self.x > self.mapWidth-((self.width/2)+(screenWidth/2))){
+			self.east = self.mapWidth-((self.width/2)+(screenWidth/2));
 		}
-		if (self.y < self.height/2){
-			self.north = self.height/2;
+		if (self.y < ((self.height/2)+(screenHeight/2))){
+			self.north = ((self.height/2)+(screenHeight/2));
 		}
-		if (self.y > self.mapHeight-self.height/2){
-			self.south = self.mapHeight-self.height/2;
+		if (self.y > self.mapHeight-((self.height/2)+(screenHeight/2))){
+			self.south = self.mapHeight-((self.height/2)+(screenHeight/2));
 		}
 
 	// This method animates the movement by incrementing the x or
@@ -214,6 +216,12 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 		player.mapCeiling = data.mapCeiling;
 		player.mapHeight = data.height;
 		player.mapWidth = data.width;
+		player.x = data.x;
+		player.y = data.y;
+		player.east = data.x;
+		player.west = data.x;
+		player.north = data.y;
+		player.south = data.y;
 	});
 
 

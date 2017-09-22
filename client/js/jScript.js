@@ -56,7 +56,7 @@ Maps = function(id,imgSrc,width,height){
     return self;
 }
 
-currentMap = Maps('house1Floor','/client/img/house1floor.png',960,960);
+currentMap = Maps('house1Floor','/client/img/house1floor.png',1088,800);
 
 function drawMapCeiling() {
     var player = Player.list[selfId];  // The selfId tells the client which player is logged.
@@ -317,7 +317,7 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 'house1Ceiling', 960, 960, 560, 425);
+    changeMap('house1Floor', 'house1Ceiling', 800, 1088, 620, 365);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 

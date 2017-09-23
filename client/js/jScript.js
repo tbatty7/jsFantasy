@@ -20,8 +20,8 @@ function initImage() {
     Img.mapFloor = {};
     Img.mapFloor['villageFloor'] = new Image();
     Img.mapFloor['villageFloor'].src = '/client/img/village.png';
-    // Img.mapFloor['house1Floor'] = new Image();
-    // Img.mapFloor['house1Floor'].src = '/client/img/house1floor.png';
+    Img.mapFloor['house1Floor'] = new Image();
+    Img.mapFloor['house1Floor'].src = '/client/img/house1floor.png';
     Img.mapCeiling = {};
     Img.mapCeiling['villageCeiling'] = new Image();
     Img.mapCeiling['villageCeiling'].src = '/client/img/blankmap.png';  // Need to add something here?  Treetops?
@@ -29,34 +29,12 @@ function initImage() {
     Img.mapCeiling['house1Ceiling'].src = '/client/img/house1ceiling.png';
 }
 
-// function drawMapFloor() {
-//     var player = Player.list[selfId];  // The selfId tells the client which player is logged.
-//     var x = screenWidth/2 - player.x;
-//     var y = screenHeight/2 - player.y;
-//     ctx.drawImage(Img.mapFloor[player.mapFloor],x,y);  // this draws the map for the logged player.
-// }
-
-Maps = function(id,imgSrc,width,height){
-    var self = {
-        id:id,
-        image: new Image(),
-        width: width,
-        height: height
-    }
-
-    self.image.src = imgSrc;
-
-    self.drawFloor = function(){
-        var player = Player.list[selfId];  
-        var x = screenWidth/2 - player.x;
-        var y = screenHeight/2 - player.y;
-        ctx.drawImage(self.image,0,0,self.image.width,self.image.height,x,y,self.image.width,self.image.height);
-    }
-
-    return self;
+function drawMapFloor() {
+    var player = Player.list[selfId];  // The selfId tells the client which player is logged.
+    var x = screenWidth/2 - player.x;
+    var y = screenHeight/2 - player.y;
+    ctx.drawImage(Img.mapFloor[player.mapFloor],x,y);  // this draws the map for the logged player.
 }
-
-currentMap = Maps('house1Floor','/client/img/house1floor.png',1088,800);
 
 function drawMapCeiling() {
     var player = Player.list[selfId];  // The selfId tells the client which player is logged.
@@ -157,6 +135,7 @@ function initSocketIo() {
 
     socket.on('update', function(data){
         // data received will look like this: {player: [{id:123,x:0,y:0}, {id:222,x:0,y:2}], npc: [{id:a1,x:10,y:14}]}
+        console.log(data);
         for(var i = 0; i < data.player.length; i++) {
             var pack = data.player[i];
             var p = Player.list[pack.id];
@@ -217,7 +196,7 @@ function initSocketIo() {
             return;
         }
         ctx.clearRect(0,0,screenWidth,screenHeight);
-        currentMap.drawFloor();
+        drawMapFloor();
         drawScore();
         for (var i in Player.list) {
             Player.list[i].draw();
@@ -317,7 +296,7 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 'house1Ceiling', 800, 1088, 620, 365);
+    changeMap('house1Floor', 'house1Ceiling', 1088, 800, 620, 365);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
@@ -369,9 +348,9 @@ function sendEval(){
     $('textarea#console').val("");
 }
 
-//  UI  //
+                                                     //  UI  //
 
-function changeMap(mapFloor,mapCeiling,height,width,x,y){
+function changeMap(mapFloor,mapCeiling,width,height,x,y){
     socket.emit('changeMap', {mapFloor: mapFloor, mapCeiling: mapCeiling, height: height, width: width, x: x, y: y});
 }
 

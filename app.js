@@ -22,10 +22,63 @@ console.log("Server Started, listening on localhost:2000");
 var DEBUG = false;
 var screenWidth = 700;
 var screenHeight = 400;
+var tileSize = 32;
 
 var SOCKET_LIST = {};
 
 var PLAYER_LIST = {}; // This contains all the players.
+
+
+//////////////////////////////////////////////////// MAPS ///////////////////////////////////////////////
+
+Maps = function(id,width,height,grid){
+    var self = {
+        id:id,
+        width: grid[0].length * tileSize,
+        height: grid.length * tileSize,
+        grid: grid,  // This is a 2 dimension array for a tile map to create parts of map that you cannot walk over.
+    }
+
+    self.isPositionWall = function(pt){  // this interprets your position to say where you are on the map.
+    	var gridX = Math.floor(pt.x/tileSize);
+    	var gridY = Math.floor(pt.y/tileSize);
+    	if (gridX < 0 || gridX >= self.grid[0].length){ // This tests if you are outside the map E/W.
+    		return true;
+    	}
+    	if (gridY < 0 || gridY >= self.grid.length){  // This tests if you are outside of map N/S
+    		return true;
+    	}
+    	return self.grid[gridY][gridX];  // the y is first because it corresponds to the rows and X is 
+	}							    	// the number of items in each array, aka the columns.
+    
+
+    return self;
+}
+
+
+MapList = {}; //Where the maps will live
+
+function createGrid(width, height, array1){  // this takes a single long array from Tiled map and splits it into a grid.
+	var grid = [];
+	for (var i = 0; i < height; i++){  // the height in number of tiles goes first
+		grid[i] = [];
+		for(var j = 0; j < width; j++){  // the width in tiles goes here
+			grid[i][j] = array1[i * width + j];
+		}
+	}
+	return grid;
+}
+
+//////////// house1Map
+var house1TileSize = {width:34,height:25};  // Just informational - the number of tiles wide and high map is
+// the below array was pulled out of the Tiled program saving the file as javascript.
+var house1array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+MapList["house1Floor"] = Maps('house1Floor',1088,800,createGrid(34,25,house1array));
+
+//////////// villageMap
+var villageTileSize = {width:44,height:30};  // Just made up dimensions
+MapList['villageFloor'] = Maps('villageFloor',1088,800,createGrid(34,25,house1array));
+////////////////////////////////////////////  PLAYER  ////////////////////////////////////////////////////
 
 var Entity = function(param){
 	var self = {
@@ -102,8 +155,12 @@ var Player = function(param) { //This will create a player with the properties i
 	self.hpMax = 10;
 	self.intro = false;  // This determines if the intro sequence runs.
 	self.xp = 0;  // This will increase with any successful action.
+	self.collision = function(){
+
+	}
 	self.updatePosition = function() {
-		
+		var oldX = self.x;
+		var oldY = self.y;
 		// This tests for collision on the map edges
 		if (self.x < (self.width/2)+(screenWidth/2)){  // This was 0, but then the player would be half off the map since the x and y 
 			self.west = (self.width/2)+(screenWidth/2);// centered on the player.  This way it stops at the edge of the map.
@@ -142,7 +199,14 @@ var Player = function(param) { //This will create a player with the properties i
 		}
 
 		// Collision testing
-
+		if (MapList[self.mapFloor].isPositionWall(self)){
+			self.x = oldX;
+			self.east = oldX;
+			self.west = oldX;
+			self.y = oldY;
+			self.north = oldY;
+			self.south = oldY;
+		}
 	}
 
 	self.getInitPack = function(){
@@ -184,7 +248,7 @@ Player.list = {};
 
 Player.onConnect = function(socket){// This creates player and add listener for movement.
 	var mapFloor = 'villageFloor'; // This will need to change.
-	var mapCeiling = 'villageCeiling'
+	var mapCeiling = 'villageCeiling';
 	var player = Player({
 		id:socket.id,
 		mapCeiling:mapCeiling,
@@ -192,7 +256,6 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	});	// Player() Calls the object constructor of the player, passing the Math.random
 	// number that was assigned to the socket number as the id.  It is passed as an object.
 	socket.on('newPositions', function(data) {
-		console.log(data);
 // This changes the value of n,s,e,w in player object to the
 // endPosition value assigned in the parameter of the direction
 // functions you type in the console.
@@ -217,9 +280,9 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 		player.mapHeight = data.height;
 		player.mapWidth = data.width;
 		player.x = data.x;
-		player.y = data.y;
 		player.east = data.x;
 		player.west = data.x;
+		player.y = data.y;
 		player.north = data.y;
 		player.south = data.y;
 	});
@@ -250,12 +313,12 @@ Player.update = function(){
 	for (var i in Player.list) {
 		var player = Player.list[i];
 		player.updatePosition(); // This loop animates the moving of the character.
-			pack.push(player.getUpdatePack());
+		pack.push(player.getUpdatePack());
 	}
 	return pack;	
 }
 
-// NPC creation and info
+////////////////////////////////////////// NPC creation and info //////////////////////////////////
 
 var NPC = function(param){
 	var self = Entity(param);
@@ -311,6 +374,12 @@ NPC.getAllInitPack = function(){
 	}
 	return npcs;
 }
+
+
+
+
+
+
 
 var USERS = {
 // username:password for each player

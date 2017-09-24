@@ -135,7 +135,6 @@ function initSocketIo() {
 
     socket.on('update', function(data){
         // data received will look like this: {player: [{id:123,x:0,y:0}, {id:222,x:0,y:2}], npc: [{id:a1,x:10,y:14}]}
-        console.log(data);
         for(var i = 0; i < data.player.length; i++) {
             var pack = data.player[i];
             var p = Player.list[pack.id];
@@ -158,6 +157,15 @@ function initSocketIo() {
                 if (pack.mapCeiling !== undefined) {
                     p.mapCeiling = pack.mapCeiling;
                 }
+                if (pack.destMap !== undefined) {
+                    if (p.intro){
+                        secondIntro();  // for when you leave the first house.
+                    } else {
+                        p.mapFloor = pack.destMap;
+                    }
+                }
+                // Is this where I need to put the test: if player intro is true and if isPositionDoor is true, run SecondIntro();?
+                // This is updating the players position each frame and changing maps, and 
             }
         }
         
@@ -232,6 +240,7 @@ function initSignIn(){
         if(data.success){
                 logonDisplay.style.display = "none";
             if(data.intro){
+                // Question - should I set the player.intro to data.intro here, or in the update loop?
                 console.log("ready to Play Intro");
                 playIntro1();//code that runs intro
 
@@ -296,14 +305,14 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 'house1Ceiling', 1088, 800, 620, 365);
+    changeMap('house1Floor', 620, 365);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
 }
 
 function secondIntro(){  // Have this called when there is a collision when the player connects with the door
-    changeMap('villageFloor', 'villageCeiling');
+    changeMap('villageFloor', 620,365);
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
     '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
@@ -350,8 +359,8 @@ function sendEval(){
 
                                                      //  UI  //
 
-function changeMap(mapFloor,mapCeiling,width,height,x,y){
-    socket.emit('changeMap', {mapFloor: mapFloor, mapCeiling: mapCeiling, height: height, width: width, x: x, y: y});
+function changeMap(mapFloor,x,y){
+    socket.emit('changeMap', {mapFloor: mapFloor,x:x,y:y});
 }
 
 function testCollision(rect1, rect2){

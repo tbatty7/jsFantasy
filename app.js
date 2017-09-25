@@ -39,6 +39,9 @@ Maps = function(mapFloor,mapCeiling,width,height,collGrid,doorsGrids){
         height: collGrid.length * tileSize,
         collGrid: collGrid,  // This is a 2 dimension array for a tile map to mark parts of map that you cannot walk over.
         doorsGrids: doorsGrids,  // This is a tile grid of objects which include grids to test for a door and the map name they go to.
+        destMap: "villageFloor",
+        playerX: 620,
+        playerY: 365,
     }
 
     self.isPositionWall = function(pt){  // this interprets your position to what tile you are on and returns true if you should not be there.
@@ -58,13 +61,18 @@ Maps = function(mapFloor,mapCeiling,width,height,collGrid,doorsGrids){
 	self.isPositionDoor = function(pt){  // Would this work for creating a door that will call the changeMap function?
 		var gridX = Math.floor(pt.x/tileSize);
 		var gridY = Math.floor(pt.y/tileSize);  // These convert the players coords to grid tile coords.
-		var coords = 0;
 		for (var i = 0; i < self.doorsGrids.length; i++){
-			coords += self.doorsGrids[i].grid[gridY][gridX]; //this is checking for a single value, the array selected by gridY,
-															// and the item in it with gridX.  If that returns a number, it is true.
-			pt.destMap = self.doorsGrids[i].destMap; // This changes the destMap property in the player object to the new one. 
-		}		   // The destMap should be sent to the client and when it is, trigger a changemap and an if statement if intro is true.
-		return coords;
+			var tile = self.doorsGrids[i].grid[gridY][gridX]; // This checks the grid for the tile the player is standing on.
+			if (tile){ // This is checking if this tile has a value of zero or a number(truthy).  If it has a number:
+				console.log('door contacted at isPositionDoor');
+				console.log(self.doorsGrids[i]);			
+				self.playerX = self.doorsGrids[i].playerX;
+				self.playerY = self.doorsGrids[i].playerY;												
+				self.destMap = self.doorsGrids[i].destMap; // This changes the destMap property in the current map object to the new one. 
+				return true;  // This is being called in an if statement that expects true or false.
+			}
+		}		   
+		return false;
 	}									
 
     return self;
@@ -83,14 +91,16 @@ function createGrid(width, height, array1){  // this takes a single long array f
 	return grid;
 }
 
-function DoorsArrayConstructor(width,height){  // Needs more than 2 arguments, they need to be sets of Tiled array first and destination map second.
+function DoorsArrayConstructor(width,height){  // Needs more than 4 arguments, they need to be sets of Tiled array, mapFloor name, x and y.
 	var doorsArray = [];
 	// the 3rd argument should be the array, the 4th argument should be the destination map name.
-	for (var i = 2; i < arguments.length; i+=2){
+	for (var i = 2; i < arguments.length; i+=4){
 		var gridArray = arguments[i];
 		var destMap = arguments[i+1];
+		var x = arguments[i+2];
+		var y = arguments[i+3];
 		var grid = createGrid(width, height, gridArray); // turns Tiled array into grid
-		doorsArray.push({grid: grid, destMap: destMap});
+		doorsArray.push({grid: grid, destMap: destMap, playerX: x, playerY: y});
 		}
 	return doorsArray;
 }
@@ -99,33 +109,34 @@ MapList = {}; //Where the maps will live
 
 //////////// house1Map  Tile Size = {width:34,height:25}   the number of tiles wide and high map is
 
-// the below array was pulled out of the Tiled program saving the file as javascript.
+// the below array was pulled out of the Tiled program saving the file as javascript.  It is for collisions in the map.
 var house1array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 290, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 290, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// tha below array is the Tiled single array with the first door map in it.  If there were more doors, I would need more 
+// tha below array is the Tiled single array with the door map in it.  If there were more doors, I would need more 
 var house1_door1array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 308, 308, 308, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 308, 308, 308, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-MapList['house1Floor'] = Maps('house1Floor','house1Ceiling',1088,800,createGrid(34,25,house1array),DoorsArrayConstructor(34,25,house1_door1array,'villageFloor'));
+var house1_doorGrids = DoorsArrayConstructor(34,25,house1_door1array,'villageFloor', 620, 365); // This one only has 1 grid object.
+console.log(house1_doorGrids);
+MapList['house1Floor'] = Maps('house1Floor','house1Ceiling',1088,800,createGrid(34,25,house1array),house1_doorGrids);
 
 
 //////////// villageMap  Tile Size = {width:44,height:30};  // Just made up dimensions
 
 // All the data on this need to be checked and corrected.  It just has dummy data in it for now.
 
-MapList['villageFloor'] = Maps('villageFloor','villageCeiling',1088,800,createGrid(34,25,house1array),DoorsArrayConstructor(34,25,house1_door1array,'villageFloor'));
+MapList['villageFloor'] = Maps('villageFloor','villageCeiling',2359,1952,createGrid(34,25,house1array),DoorsArrayConstructor(34,25,house1_door1array,'villageFloor'));
 
 
 ////////////////////////////////////////////  PLAYER  ////////////////////////////////////////////////////
 
 var Entity = function(param){
 	var self = {
-		x: 340,
-		y: 200,
+		x: 620,
+		y: 365,
 		id: "",
 		stepSize: 20,
 		xpGained: 0,
 		gainXp: 0,
 		mapFloor: 'house1Floor',
-		mapCeiling: 'house1Ceiling',
 		height: 50,
 		width: 40,
 	}
@@ -145,6 +156,7 @@ var Entity = function(param){
 		if (param.id)
 			self.id = param.id; //You have to pass the id as an object for everything to work.
 	}
+	self.mapCeiling = MapList[self.mapFloor].mapCeiling;
 	self.update = function() {
 		self.updatePosition();
 		if (self.hp <= 0){  // What to do if player dies.
@@ -180,12 +192,12 @@ var Entity = function(param){
 var Player = function(param) { //This will create a player with the properties in the param object
 	var self = Entity(param);
 	self.number = "" + Math.floor(10 * Math.random());
-	self.east = 340;
-	self.west = 340;
-	self.north = 200;
-	self.south = 200;
-	self.mapHeight = 960;
-	self.mapWidth = 960;
+	self.east = 620;
+	self.west = 620;
+	self.north = 365;
+	self.south = 365;
+	self.mapHeight = MapList[self.mapFloor].height;
+	self.mapWidth = MapList[self.mapFloor].width;
 	self.destMap = 'villageFloor';
 	self.maxSpd = 5;
 	self.hp = 10;
@@ -244,10 +256,18 @@ var Player = function(param) { //This will create a player with the properties i
 			self.north = oldY;
 			self.south = oldY;
 		}
-		if (MapList[self.mapFloor].isPositionDoor(self)){
-			// push the self.destMap value along with this if it is true
-			self.destMap = MapList[self.mapFloor].destMap;
-			
+		if (MapList[self.mapFloor].isPositionDoor(self)){ // This checks each x,y coord and if the grid shows a value there,
+			// it returns true, but before it returns true, it pushes the x,y coords and destMap to the Maps object of current map.
+			var newMapFloor = MapList[self.mapFloor].destMap; // This saves the variable hopefully before it changes.
+			// These are the x,y coords held in the door grid array telling it where you want the character to start on destination map.
+			self.x = MapList[self.mapFloor].playerX;
+			self.east = MapList[self.mapFloor].playerX;
+			self.west = MapList[self.mapFloor].playerX;
+			self.y = MapList[self.mapFloor].playerY;
+			self.north = MapList[self.mapFloor].playerY;
+			self.south = MapList[self.mapFloor].playerY;
+			// This changes the mapFloor, thus changing everything above, so hopefully the others will change before this one does.
+			self.mapFloor = newMapFloor;
 		}	
 
 	}
@@ -290,8 +310,8 @@ Player.list = {};
 
 
 Player.onConnect = function(socket){// This creates player and add listener for movement.
-	var mapFloor = 'villageFloor'; // This will need to change.
-	var mapCeiling = 'villageCeiling';
+	var mapFloor = 'house1Floor'; // This will need to change.
+	var mapCeiling = 'house1Ceiling';
 	var player = Player({
 		id:socket.id,
 		mapCeiling:mapCeiling,
@@ -321,7 +341,7 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 
 		player.mapFloor = data.mapFloor;
 		player.mapCeiling = MapList[data.mapFloor].mapCeiling;
-		player.mapHeight = MapList[data.mapFloor].height;
+		player.mapHeight = MapList[data.mapFloor].height;  // height and width are now included in the map object.
 		player.mapWidth = MapList[data.mapFloor].width;
 	// If I change the below directions in player directly, the map change from client will work, but will map change 
 	// from server work?
@@ -332,8 +352,8 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	// when the door event is pulled can be controlled by that event in the map with a playerX and playerY.
 	// this changemap function should be eliminated.
 
-	// The map change should only happen on the server side.  I need to add x and y to the door grid array so when 
-	// the ispositiondoor function is called, it also changes the x and y.
+	// The map change should only happen on the server side.  I added x and y to the door grid array so when 
+	// the ispositiondoor function is called, it also changes the x and y for the new map.
 		player.x = data.x;
 		player.east = data.x;
 		player.west = data.x;

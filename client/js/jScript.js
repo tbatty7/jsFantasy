@@ -305,14 +305,14 @@ function playIntro3(){
 }
 
 function pauseIntro(){
-    changeMap('house1Floor', 620, 365);
+    // changeMap('house1Floor', 620, 365);  This is decremented.
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
 }
 
 function secondIntro(){  // Have this called when there is a collision when the player connects with the door
-    changeMap('villageFloor', 620,365);
+    // changeMap('villageFloor', 620,365);  These are now decremented
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
     '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
@@ -359,7 +359,7 @@ function sendEval(){
 
                                                      //  UI  //
 
-function changeMap(mapFloor,x,y){
+function changeMap(mapFloor,x,y){  // No longer needed.  The door array changes the maps.
     socket.emit('changeMap', {mapFloor: mapFloor,x:x,y:y});
 }
 

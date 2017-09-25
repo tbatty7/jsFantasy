@@ -271,7 +271,9 @@ var Player = function(param) { //This will create a player with the properties i
 			self.y = MapList[self.mapFloor].playerY;
 			self.north = MapList[self.mapFloor].playerY;
 			self.south = MapList[self.mapFloor].playerY;
-			self.mapCeiling = MapList[MapList[self.mapFloor].destMap].mapCeiling;
+			self.mapHeight = MapList[newMapFloor].height;
+			self.mapWidth = MapList[newMapFloor].height;
+			self.mapCeiling = MapList[newMapFloor].mapCeiling;
 			// This changes the mapFloor, thus changing everything above, so hopefully the others will change before this one does.
 			self.mapFloor = newMapFloor;
 		}	

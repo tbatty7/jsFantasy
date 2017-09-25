@@ -19,12 +19,12 @@ function initImage() {
     Img.npc.src = '/client/img/one-soldier.png';
     Img.mapFloor = {};
     Img.mapFloor['villageFloor'] = new Image();
-    Img.mapFloor['villageFloor'].src = '/client/img/village.png';
+    Img.mapFloor['villageFloor'].src = '/client/img/villageFloor.png';
     Img.mapFloor['house1Floor'] = new Image();
     Img.mapFloor['house1Floor'].src = '/client/img/house1floor.png';
     Img.mapCeiling = {};
     Img.mapCeiling['villageCeiling'] = new Image();
-    Img.mapCeiling['villageCeiling'].src = '/client/img/blankmap.png';  // Need to add something here?  Treetops?
+    Img.mapCeiling['villageCeiling'].src = '/client/img/villageCeiling.png';  // Need to add something here?  Treetops?
     Img.mapCeiling['house1Ceiling'] = new Image();
     Img.mapCeiling['house1Ceiling'].src = '/client/img/house1ceiling.png';
 }

@@ -269,7 +269,7 @@ function initSignUp(){
 
 //  INTRO  //
 
-function playIntro1(){
+function playIntro01(){
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.style.display = "block";
     div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
@@ -280,7 +280,14 @@ function playIntro1(){
     '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
     '<button type="button" class="btn btn-warning" onclick="playIntro2()">Continue</button>';
 }
+function playIntro1(){
+    // image,text,[responses],[cb]
+    dialog("./client/img/wizard.jpg","Old Man: Well hello, looks like you are finally awake.","Wha..Where am I?", playIntro2);
+}
 
+function playeIntro02(){
+    dialog("./client/img/wizard.jpg")
+}
 function playIntro2(){
     var div = document.getElementById('dialog');
     div.innerHTML = '<h3>Old Man: It\'s strange... I see something in you.</h3>' +
@@ -320,7 +327,7 @@ function secondIntro(){  // Have this called when there is a collision when the 
     '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +
     '<h3>Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.</h3>' +
     '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
-    '<button type="button" class="btn btn-warning" onclick="playIntro2()">Continue</button>';
+    '<button type="button" class="btn btn-warning" style="width:300px;" onclick="playIntro2()">Continue</button>';
     gameDisplay.style.display = "none"; 
     div.style.display = "block";
 }
@@ -358,6 +365,28 @@ function sendEval(){
 }
 
                                                      //  UI  //
+
+// This will take an image of the npc you are talking with, the text of what they say, then a response, then the callback
+// for that response, then you can put another response, and the corresponding callback so you can choose from two different
+// responses.
+function dialog(image,text,response,cb){ 
+    var div = document.getElementById('dialog'); 
+    div.style.display = "block";
+    div.innerHTML = '<img class="img-rounded img-responsive center-block" style="width:auto;height:400px;" src="' + image + '" alt="no image"/>' +
+    '<div class="alert alert-danger text-center"><h3>'+ text + '</h3>' +
+    '<button type="button" class="btn btn-warning btn-lg" id="resp1">'+ response +'</button></div>';
+    $('#resp1').click(cb);
+    resp1
+    if(arguments.length === 5){
+    div.appendChild('<button type="button" class="btn btn-success btn-lg" id="resp2">'+ arguments[4] +'</button>');
+    $('#resp2').click(arguments[5]);
+    }
+    if(arguments.length === 7){  // .length is the count of arguments, but the arguments[2] is the index of arguments.
+    div.appendChild('<button type="button" class="btn btn-info btn-lg" id="resp3">'+ arguments[6] +'</button>');
+    $('#resp3').click(arguments[7]);
+    }
+
+}
 
 function changeMap(mapFloor,x,y){  // No longer needed.  The door array changes the maps.
     socket.emit('changeMap', {mapFloor: mapFloor,x:x,y:y});

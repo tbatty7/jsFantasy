@@ -27,6 +27,8 @@
 				<h1 class="text-center alert-success col-xs-8 col-xs-offset-2">jsFantasy</h1>
 				</div>
 				
+<!-- LOGIN DIV -->
+
 				<div id="logonDisplay" class="well">
 					<div class="alert alert-info">
 						<p>jsFantasy is a MMORPG (Massively Multiplayer Online Role Playing Game) that teaches players JavaScript with a story line.  It incorporates lessons as the story moves along.  It provides a fun way to learn JavaScript.</p>
@@ -60,22 +62,30 @@
 						<button type="submit" id="signUp" class="btn btn-danger">Create New Character</button>
 					</form>
 					
+<!-- SIDE PANEL							 -->
+
 				</div>
 			<div id="dialog" class="well" style="display:none;"></div>
 			<div id="gameDisplay" style="display: none;">
 				
 				<div class="row">
 					<div class="col-xs-1 ">
-						<div class="alert alert-success" style="height: 400px">
+						<div class="alert alert-success" id="side" style="height: 400px">
 						
-						Side Panel
+							<div class="text-center" id="xp">
+								<p class="pull-left">xp:</p>
+							</div>
 
 						</div>
 					</div>
 
+<!-- GAME SCREEN -->
+
 					<div class="col-xs-7">
 						<canvas id="ctx" width="700" height="400" style="border:1px solid #000000;"></canvas>
 					</div>
+
+<!-- LARGE CHALLENGE CONSOLE -->
 
 					<div class="col-xs-4">
 						<div class="alert alert-info">
@@ -90,10 +100,15 @@
 					</div>
 				</div>
 
+<!-- NOTES -->
+
 				<div class="row">
 					<div class="col-xs-1 alert alert-info">
 					notes
 					</div>
+
+<!-- COMMAND CONSOLE -->
+
 					<div class="col-xs-7">
 						<div class="alert alert-info">
 							<form class="form-inline">
@@ -107,6 +122,8 @@
 						</div>
 						
 					</div>
+
+<!-- CHAT WINDOW -->
 
 					<div id="chat" class="col-xs-4 alert alert-success" style="height: 140px; overflow-y: scroll">
 						<p>Welcome to Chat!</p>

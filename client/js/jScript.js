@@ -2,6 +2,7 @@ var socket;
 var Img;
 var ctx;
 var Player;
+var lastXP = null;
 var selfId = null;
 var screenWidth = 700;
 var screenHeight = 400;
@@ -44,9 +45,15 @@ function drawMapCeiling() {
 }
 
 function drawScore() {
-    ctx.fillStyle = 'white';
-    ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
+    // ctx.fillStyle = 'white';
+    // ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
+    if(lastXP === Player.list[selfId].xp){
+        return;
+    }
+    lastXP = Player.list[selfId].xp;
+    $('#xp').append('<h1 class="clearfix">' + Player.list[selfId].xp + '</h1>');
 }
+
 
 function initSocketIo() {
     socket = io();
@@ -373,16 +380,16 @@ function dialog(image,text,response,cb){
     var div = document.getElementById('dialog'); 
     div.style.display = "block";
     div.innerHTML = '<img class="img-rounded img-responsive center-block" style="width:auto;height:400px;" src="' + image + '" alt="no image"/>' +
-    '<div class="alert alert-danger text-center"><h3>'+ text + '</h3>' +
+    '<div class="alert alert-danger text-center" id="responses"><h3>'+ text + '</h3>' +
     '<button type="button" class="btn btn-warning btn-lg" id="resp1">'+ response +'</button></div>';
     $('#resp1').click(cb);
-    resp1
+    var responses = document.getElementById('responses');
     if(arguments.length === 5){
-    div.appendChild('<button type="button" class="btn btn-success btn-lg" id="resp2">'+ arguments[4] +'</button>');
+    responses.appendChild('<button type="button" class="btn btn-success btn-lg" id="resp2">'+ arguments[4] +'</button>');
     $('#resp2').click(arguments[5]);
     }
     if(arguments.length === 7){  // .length is the count of arguments, but the arguments[2] is the index of arguments.
-    div.appendChild('<button type="button" class="btn btn-info btn-lg" id="resp3">'+ arguments[6] +'</button>');
+    responses.appendChild('<button type="button" class="btn btn-info btn-lg" id="resp3">'+ arguments[6] +'</button>');
     $('#resp3').click(arguments[7]);
     }
 
@@ -492,6 +499,9 @@ function initKeyActions() {
     $("textarea#console").keydown(handleEnter);
     $('input#submitBigCon').click(handleConsole);
    // $('button#submitCon').click(handleOldButton);
+   document.oncontextmenu = function(event){ // This makes the right click not pull up a menu on the screen.
+    event.preventDefault();
+   }
 }
 
 function init() {

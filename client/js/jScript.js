@@ -47,11 +47,10 @@ function drawMapCeiling() {
 function drawScore() {
     // ctx.fillStyle = 'white';
     // ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
-    if(lastXP === Player.list[selfId].xp){
-        return;
-    }
+    if(lastXP != Player.list[selfId].xp){
     lastXP = Player.list[selfId].xp;
     $('#xp').append('<h1 class="clearfix">' + Player.list[selfId].xp + '</h1>');
+    }
 }
 
 

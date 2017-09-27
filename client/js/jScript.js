@@ -44,13 +44,14 @@ function drawMapCeiling() {
     ctx.drawImage(Img.mapCeiling[player.mapCeiling],x,y);  // this draws the map for the logged player.
 }
 
-function drawScore() {
+function drawSideUI() {
     // ctx.fillStyle = 'white';
     // ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
     if(lastXP != Player.list[selfId].xp){
     lastXP = Player.list[selfId].xp;
     $('#xp').append('<h1 class="clearfix">' + Player.list[selfId].xp + '</h1>');
     }
+    // I can add other UI display items here.
 }
 
 
@@ -211,7 +212,7 @@ function initSocketIo() {
         }
         ctx.clearRect(0,0,screenWidth,screenHeight);
         drawMapFloor();
-        drawScore();
+        drawSideUI();
         for (var i in Player.list) {
             Player.list[i].draw();
         }
@@ -459,6 +460,8 @@ function handleEnter(event) {
         event.preventDefault();
         if (consoleText.substring(0,2) === "//") {
             sendChat();
+        } else if (consoleText[0] === "@"){  // The consoleText[0] checks the same thing as consoleText.substring(0,1)
+            sendPm(consoleText);                    // They both check the first character of the message typed in the window.
         } else if (consoleText.substring(0,1) === "/") {
             sendEval();
         } else if (consoleText) {
@@ -473,6 +476,14 @@ function handleEnter(event) {
         }
     }
     
+}
+
+function sendPm(data){  // data expected is @username,message
+    socket.emit('sendPmToServer', {
+        username: data.slice(1, data.indexOf(',')),  // This cuts the name out of the string, assuming a comma is after it.
+        // The indexOf(',') gives the index number in the string of where the comma is.
+        message: data.slice(data.indexOf(',')+1) // This cuts out everything after the comma and assigns it to message.
+    });  
 }
 
 function handleConsole(event) {

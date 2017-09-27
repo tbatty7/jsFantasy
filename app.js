@@ -197,6 +197,7 @@ var Entity = function(param){
 var Player = function(param) { //This will create a player with the properties in the param object
 	var self = Entity(param);
 	self.number = "" + Math.floor(10 * Math.random());
+	self.username = param.username;
 	self.east = 620;
 	self.west = 620;
 	self.north = 365;
@@ -261,6 +262,13 @@ var Player = function(param) { //This will create a player with the properties i
 			self.north = oldY;
 			self.south = oldY;
 		}
+
+	// The .isPositionDoor() function replaced the .changeMap function, it changes maps
+	// The collision set for doors will automatically change the map, 
+	// but then when dialog happens, It will hide the map and display the dialog, so the end of dialog can be just the 
+	// showing of the map again.  So the only time I need the changemap is in the server.  The function that is called
+	// when the door event is triggered changes the map names (linked to images on client), the x,y coords, the mapHeight and mapWidth
+
 		if (MapList[self.mapFloor].isPositionDoor(self)){ // This checks each x,y coord and if the grid shows a value there,
 			// it returns true, but before it returns true, it pushes the x,y coords and destMap to the Maps object of current map.
 			var newMapFloor = MapList[self.mapFloor].destMap; // This saves the variable hopefully before it changes.
@@ -317,11 +325,12 @@ var Player = function(param) { //This will create a player with the properties i
 Player.list = {};
 
 
-Player.onConnect = function(socket){// This creates player and add listener for movement.
+Player.onConnect = function(socket, username){// This creates player and add listener for movement.
 	var mapFloor = 'house1Floor'; // This will need to change.
 	var mapCeiling = 'house1Ceiling';
-	var player = Player({
+	var player = Player({  // This is where the player is created.
 		id:socket.id,
+		username: username,
 		mapCeiling:mapCeiling,
 		mapFloor:mapFloor, // This overrides the default map in the Entity object with the variable above.
 	});	// Player() Calls the object constructor of the player, passing the Math.random
@@ -345,31 +354,30 @@ Player.onConnect = function(socket){// This creates player and add listener for 
 	});
 
 
-	// socket.on('changeMap', function(data){
+// This is the chat function
+	socket.on("sendMsgToServer", function(msg) {
+		console.log(msg);
+		for(var i in SOCKET_LIST) {
+			SOCKET_LIST[i].emit('addToChat', player.username +":  " + msg);
+		}
+	});
 
-	// 	player.mapFloor = data.mapFloor;
-	// 	player.mapCeiling = MapList[data.mapFloor].mapCeiling;
-	// 	player.mapHeight = MapList[data.mapFloor].height;  // height and width are now included in the map object.
-	// 	player.mapWidth = MapList[data.mapFloor].width;
-	// If I change the below directions in player directly, the map change from client will work, but will map change 
-	// from server work?
-	// Map change from client is when a dialog ends and the map is changed, like when you are talking to someone.
-	// Do I need to have this at all?  If I have the map collision set for doors it will automatically change the map, 
-	// but then when dialog happens, It will hide the map and display the dialog, so the end of dialog can be just the 
-	// showing of the map again.  So the only time I need the changemap is in the server.  The function that is called
-	// when the door event is pulled can be controlled by that event in the map with a playerX and playerY.
-	// this changemap function should be eliminated.
-
-	// The map change should only happen on the server side.  I added x and y to the door grid array so when 
-	// the ispositiondoor function is called, it also changes the x and y for the new map.
-	// 	player.x = data.x;
-	// 	player.east = data.x;
-	// 	player.west = data.x;
-	// 	player.y = data.y;
-	// 	player.north = data.y;
-	// 	player.south = data.y;
-
-	// });
+	socket.on("sendPmToServer", function(data) {  //data = {username,message}
+		console.log(data);
+		var recipientSocket = null;
+		// This next part tests to see if the person you are PMing is online.
+		for(var i in Player.list){  
+			if(Player.list[i].username === data.username){ // The i in Player.list[i] is the id, and references the same player
+				recipientSocket = SOCKET_LIST[i];		  // on both Player.list and SOCKET_LIST.
+			}
+		}
+			if(recipientSocket === null){  // tests if there is no recipient with that name online.
+				socket.emit('addToChat','The player ' + data.username + ' is not online.'); // lets sender know if receipent is offline.
+			} else {
+				recipientSocket.emit('addToChat', 'From: ' + player.username + ': ' + data.message); // message sent to recipient.
+				socket.emit('addToChat','To: ' + data.username + ': ' + data.message); // Tells sender message was sent correctly
+			}
+	});
 
 
 	socket.emit('init', {  
@@ -523,6 +531,9 @@ var checkIntro = function(data, cb){
 
 
 var io = require('socket.io')(serv,{});
+
+// Everything that happens in the io.sockets.on() function happens when the user connects, not when they log in.
+// Logging in successfully is one of the things that happen in this function.
 io.sockets.on('connection', function(socket) {
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
@@ -530,8 +541,9 @@ io.sockets.on('connection', function(socket) {
 	socket.on("signIn", function(data) { // second parameter function is callback.  Needed for server to work.
 		console.log(data.username, data.password);
 		isValidPassword(data, function(res){
-			if(res){
-				Player.onConnect(socket); // Activates player character
+			if(res){  // Player is not created unless there is a valid password.
+				Player.onConnect(socket, data.username); // calls Player.onConnect, which is where the Player is created.
+				// The function above gives the username from the login to the player object linked to the socket.
 				console.log("signInResponse", true);
 
 				checkIntro(data, function(res){
@@ -574,13 +586,7 @@ io.sockets.on('connection', function(socket) {
 		Player.onDisconnect(socket);
 	});
 	
-	socket.on("sendMsgToServer", function(msg) {
-		console.log(msg);
-		var playerName = ("" + socket.id).slice(2,5);
-		for(var i in SOCKET_LIST) {
-			SOCKET_LIST[i].emit('addToChat', playerName +":  " + msg);
-		}
-	});
+
 
 	socket.on("evalServer", function(data) {
 		if (!DEBUG){

@@ -249,7 +249,7 @@ function initSignIn(){
             if(data.intro){
                 // Question - should I set the player.intro to data.intro here, or in the update loop?
                 console.log("ready to Play Intro");
-                playIntro1();//code that runs intro
+                playIntro1("./client/img/wizard.jpg");//code that runs intro
 
             } else{
                 gameDisplay.style.display = "block";  // This should be called after intro.
@@ -276,36 +276,60 @@ function initSignUp(){
 
 //  INTRO  //
 
-function playIntro01(){
-    var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
-    div.style.display = "block";
-    div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
-    '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
-    '<h3>Old Man: Easy now, there has been a terrible accident, and you were hurt.</h3><h3>You: Where are my friends and family?</h3>'+
-    '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +
-    '<h3>Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.</h3>' +
-    '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
-    '<button type="button" class="btn btn-warning" onclick="playIntro2()">Continue</button>';
-}
-function playIntro1(){
-    // image,text,[responses],[cb]
-    dialog("./client/img/wizard.jpg","Old Man: Well hello, looks like you are finally awake.","Wha..Where am I?", playIntro2);
+
+function playIntro1(image){
+    
+    one();
+
+    function one(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: Well hello, looks like you are finally awake.","Wha..Where am I?", two);
+    }
+
+    function two(){
+        // image,text,[responses],[cb]
+        dialog(image,'Old Man: Easy now, there has been a terrible accident, and you were hurt.',"Where are my friends and family?", three);
+    }
+
+    function three(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: I am afraid you are the only survivor of your village.","What? How did that happen?", four);
+    }
+
+    function four(){image
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.","Is that why I can\'t feel my legs?  What am I going to do now?", five);
+    }
+
+    function five(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: Hmmm... You know...It\'s strange... I see something in you.","What do you mean?", six);
+    }
+
+    function six(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: I see a glimmer in your eyes. You have code, my friend.","Code? What is that?", seven);
+    }
+
+    function seven(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: It is what we Scriptgicians call magic.  Magic is a lot like writing computer code, in fact, it is almost exactly like it","Magic? Can that heal me so I can walk again?", eight);
+    }
+
+    function eight(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: Unfortunately, no.  But I will teach you some spells so you can move around.","Okay. Do I have to call you master?", nine);
+    }
+
+    function nine(){
+        // image,text,[responses],[cb]
+        dialog(image,"Old Man: Only if it helps with your training.  Let\'s begin.  Spells are in the form of functions and the first four are north(); south(); east(); and west();...</h3>","Wha..Where am I?", LessonOne_Functions);
+    }
+
 }
 
-function playeIntro02(){
-    dialog("./client/img/wizard.jpg")
-}
-function playIntro2(){
-    var div = document.getElementById('dialog');
-    div.innerHTML = '<h3>Old Man: It\'s strange... I see something in you.</h3>' +
-    '<h3>You: What do you mean?</h3><h3>Old Man: I see a glimmer in your eyes. You have code, my friend.</h3><h3>You: Code? What is that?</h3>' +
-    '<h3>Old Man: It is what we magicians call magic.  Magic is a lot like writing computer code, in fact, it is almost exactly like it, and you can even get a good job if you know how to use it.</h3>' +
-    '<h3>You: Magic? Can that heal me so I can walk again?</h3><h3>Old Man: Unfortunately, no.  But I will teach you some spells so you can move around.</h3>' +
-    '<h3>You: Okay. Do I have to call you master?</h3><h3>Old Man: Only if it helps with your training.  Let\'s begin.  Spells are in the form of functions and the first four are north(); south(); east(); and west();...</h3>' +
-    '<button type="button" class="btn btn-warning" onclick="playIntro3()">Continue</button>';
-}
 
-function playIntro3(){
+function LessonOne_Functions(){
     var div = document.getElementById('dialog');
     div.innerHTML = '<h1>Lesson One: Functions</h1><h4>Functions are the basic building blocks of JavaScript.</h4>' +
     '<h4>They are the commands that tell the computer what to do.</h4><h4>There are some built in functions in JavaScript, but most of them you need to create in order to use.</h4>' +
@@ -329,6 +353,7 @@ function secondIntro(){  // Have this called when there is a collision when the 
     // changeMap('villageFloor', 620,365);  These are now decremented
     var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
     div.innerHTML = '<img class="img-rounded pull-left" src="./client/img/wizard.jpg" alt="no image"/>' +
+    "and you can even get a good job if you know how to use it." +
     '<h3>Old Man: Well hello, looks like you are finally awake.</h3><h3>You: Wha..Where am I?</h3>'+
     '<h3>Old Man: Easy now, there has been a terrible accident, and you were hurt.</h3><h3>You: Where are my friends and family?</h3>'+
     '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +

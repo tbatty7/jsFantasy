@@ -133,7 +133,8 @@ MapList['villageFloor'] = Maps('villageFloor','villageCeiling',2272,1600,createG
 
 ////////////////////////////////////////////  PLAYER  ////////////////////////////////////////////////////
 
-var Entity = function(param){
+
+var Entity = function(param){  
 	var self = {
 		x: 620,
 		y: 365,

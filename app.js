@@ -327,15 +327,16 @@ Player.list = {};
 
 
 Player.onConnect = function(socket, username){// This creates player and add listener for movement.
-	var mapFloor = 'house1Floor'; // This will need to change.
-	var mapCeiling = 'house1Ceiling';
-	var player = Player({  // This is where the player is created.
-		id:socket.id,
-		username: username,
-		mapCeiling:mapCeiling,
-		mapFloor:mapFloor, // This overrides the default map in the Entity object with the variable above.
-	});	// Player() Calls the object constructor of the player, passing the Math.random
-	// number that was assigned to the socket number as the id.  It is passed as an object.
+	var mapFloor = 'house1Floor'; // This will need to change to pulling this value from MongoDB when I set that up to save the player location.
+	var mapCeiling = MapList[mapFloor].mapCeiling;  // This references the MapList so the top and bottom floors are linked.
+
+	var player = Player({  // This is where the player is created.  The argument is an object being passed to the Player() constructor function
+		id:socket.id, //This is a parameter of the function, passing the Math.random
+	// number that was assigned to the socket number as the id.
+		username: username, // This is a parameter of the function
+		mapCeiling:mapCeiling, // This variable is declared inside this function.
+		mapFloor:mapFloor, // This variable is declared inside this function.  This overrides the default map in the Entity object with the variable above.  
+	});	
 	socket.on('newPositions', function(data) {
 // This changes the value of n,s,e,w in player object to the
 // endPosition value assigned in the parameter of the direction

@@ -65,7 +65,7 @@ Maps = function(mapFloor,mapCeiling,width,height,collGrid,doorsGrids){
 			var tile = self.doorsGrids[i].grid[gridY][gridX]; // This checks the grid for the tile the player is standing on.
 			if (tile){ // This is checking if this tile has a value of zero or a number(truthy).  If it has a number:
 				console.log('door contacted at isPositionDoor');
-				console.log(self.doorsGrids[i]);			
+				// console.log(self.doorsGrids[i]);			
 				self.playerX = self.doorsGrids[i].playerX;
 				self.playerY = self.doorsGrids[i].playerY;												
 				self.destMap = self.doorsGrids[i].destMap; // This changes the destMap property in the current map object to the new one. 
@@ -254,7 +254,7 @@ var Player = function(param) { //This will create a player with the properties i
 			console.log("X: " + self.x + " Y: " + self.y);
 		}
 
-		// Map content Collision testing
+				// Map content Collision testing
 		if (MapList[self.mapFloor].isPositionWall(self)){  // This tests truthy if it returns a number it is true.
 			self.x = oldX;
 			self.east = oldX;
@@ -263,6 +263,10 @@ var Player = function(param) { //This will create a player with the properties i
 			self.north = oldY;
 			self.south = oldY;
 		}
+	}
+	
+
+	self.updateMap = function(){	
 
 	// The .isPositionDoor() function replaced the .changeMap function, it changes maps
 	// The collision set for doors will automatically change the map, 
@@ -287,7 +291,10 @@ var Player = function(param) { //This will create a player with the properties i
 			self.mapFloor = newMapFloor;
 		}	
 
+
 	}
+
+
 
 	self.getInitPack = function(){
 		return {
@@ -353,6 +360,7 @@ Player.onConnect = function(socket, username){// This creates player and add lis
 		else if (data.direction === "south") {
 			player.south += (data.endPosition * player.stepSize);
 		}
+
 	});
 
 
@@ -364,6 +372,7 @@ Player.onConnect = function(socket, username){// This creates player and add lis
 		}
 	});
 
+// This is the Private Message function
 	socket.on("sendPmToServer", function(data) {  //data = {username,message}
 		console.log(data);
 		var recipientSocket = null;
@@ -407,12 +416,43 @@ Player.update = function(){
 	for (var i in Player.list) {
 		var player = Player.list[i];
 		player.updatePosition(); // This loop animates the moving of the character.
+		// player.updateNpcs();
+		player.updateMap();
 		pack.push(player.getUpdatePack());
 	}
 	return pack;	
 }
 
 ////////////////////////////////////////// NPC creation and info //////////////////////////////////
+
+var updateNpcs = function(){
+	// This function will add the villagers in the map.  I need to have a way to add different villagers for each map.
+	// Right now I am just trying to make it work with a single villager, the old man.
+	var occupied = false;
+
+	for(var i in Player.list){  // Player.list is an object, not an array.
+		if(Player.list[i].mapFloor === "house1Floor"){ // The i in Player.list[i] is the id, NOT the index.  It is the name of the player object
+			occupied = true;  // This says that if there are any players in this map, the occupancy flag is marked to true	 
+		} 
+	}
+	// The NPC.list is an object with ids as 
+	if((NPC.list[1] === undefined) && (occupied === true)){ // If there are no NPCs and occupied is true, create NPCs.
+		//create NPC
+		console.log("create NPC");
+		var npc = NPC({
+			id:1,
+			x:300,
+			y:300,
+			number:1,
+		});
+		console.log(NPC.list);
+	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
+		//deletes NPC
+		NPC.list = {};
+		console.log("delete NPC");
+	}
+
+}
 
 var NPC = function(param){
 	var self = Entity(param);
@@ -429,13 +469,13 @@ var NPC = function(param){
 
 	self.getUpdatePack = function(){
 		return {
-			id:player.id,
-			x:player.x,
-			y:player.y
+			id:self.id,
+			x:self.x,
+			y:self.y
 		};
 	}
 
-	NPC.list[id] = self;
+	NPC.list[self.id] = self;
 	initPack.npc.push(self.getInitPack());
 	return self;
 };
@@ -451,7 +491,7 @@ NPC.update = function(){
 	for (var i in NPC.list) {
 		var npc = NPC.list[i];
 		npc.updatePosition();
-			if (npc.toRemove) {
+			if (npc.toRemove) {  // This will remove the NPCs with the associated id#s
 				delete NPC.list[i];
 				removePack.npc.push(npc.id);
 			} else {
@@ -608,6 +648,8 @@ var removePack = {player:[],npc:[]};
 // THis iterates through player list updating position and allowing
 // you to see other players in your screen.
 setInterval(function(){
+	updateNpcs();
+
 	var pack = {
 	player: Player.update(), // This interates through for players and other entities.
 	npc: NPC.update()// Add Npc list to animate characters.

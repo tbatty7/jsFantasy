@@ -445,11 +445,11 @@ var updateNpcs = function(){
 			mapFloor:"house1Floor",
 			number:1,
 			name:"OldMan",
-			xPointA:550,
-			xPointB:560,
-			yPointA:365,
-			yPointB:365,
-			spdX:1,
+			xPointA:555,
+			xPointB:555,
+			yPointA:355,
+			yPointB:375,
+			spdX:0,
 			spdY:1,
 		});
 		console.log(NPC.list);
@@ -480,6 +480,7 @@ var NPC = function(param){
 	self.spdX = param.spdX;
 	self.spdY = param.spdY;
 	self.name = param.name;
+	
 	self.getUpdatePack = function(){
 		return {
 			id:self.id,

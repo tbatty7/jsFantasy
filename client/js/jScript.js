@@ -179,7 +179,7 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
                     n.x = pack.x;
                 }
                 if (pack.y !== undefined) {
-                    n.y - pack.y;
+                    n.y = pack.y;
                 }
 
             } else {   // This is saying if there is no npc in NPC.list with this id, create the npc.

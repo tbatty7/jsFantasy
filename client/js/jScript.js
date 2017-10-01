@@ -18,7 +18,7 @@ function initImage() {
     Img.player = new Image();
     Img.player.src = '/client/img/one-soldier.png';
     Img.npc = new Image();
-    Img.npc.src = '/client/img/one-soldier.png';
+    Img.npc.src = '/client/img/one-player.png';
     Img.mapFloor = {};
     Img.mapFloor['villageFloor'] = new Image();
     Img.mapFloor['villageFloor'].src = '/client/img/villageFloor.png';
@@ -90,10 +90,7 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
             var width = Img.player.width;  //  this is where you can enlarge or shrink the player image
             var height = Img.player.height; // by multiplying or dividing the width and height by 2 or more
 
-
             ctx.drawImage(Img.player,0,0,Img.player.width,Img.player.height,x-width/2,y-height/2,width,height);
-
-            // ctx.fillText(self.xp,self.x,self.y-60);  // Draws XP number above player.
         }
 
         Player.list[self.id] = self;
@@ -217,7 +214,12 @@ var NPC = function(initPack) {  // This is for NPCs.
         var x = self.x - Player.list[selfId].x + screenWidth/2; // This keeps the NPC tied to the map when the player moves.
         var y = self.y - Player.list[selfId].y + screenHeight/2;  // technically the map is moving when the player moves.
 
-        ctx.fillRect(x, y, 30, 34); // draws npc
+        // ctx.fillRect(x, y, 30, 34); // draws npc as red box
+        var width = Img.npc.width;  //  this is where you can enlarge or shrink the player image
+        var height = Img.npc.height; // by multiplying or dividing the width and height by 2 or more
+
+        ctx.drawImage(Img.npc,0,0,Img.npc.width,Img.npc.height,x-width/2,y-height/2,width,height);
+
     }
 
     NPC.list[self.id] = self;

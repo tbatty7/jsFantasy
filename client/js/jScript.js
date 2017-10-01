@@ -16,9 +16,9 @@ function initCtx() {  // Initializes canvas screen
 function initImage() {
     Img = {};
     Img.player = new Image();
-    Img.player.src = '/client/img/one-soldier.png';
+    Img.player.src = '/client/img/player1.png';
     Img.npc = new Image();
-    Img.npc.src = '/client/img/one-player.png';
+    Img.npc.src = '/client/img/oldMan.png';
     Img.mapFloor = {};
     Img.mapFloor['villageFloor'] = new Image();
     Img.mapFloor['villageFloor'].src = '/client/img/villageFloor.png';

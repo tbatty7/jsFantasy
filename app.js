@@ -139,7 +139,7 @@ var Entity = function(param){
 		x: 620,
 		y: 365,
 		id: "",
-		stepSize: 20,
+		stepSize: 32,
 		xpGained: 0,
 		gainXp: 0,
 		mapFloor: 'house1Floor',
@@ -416,7 +416,6 @@ Player.update = function(){
 	for (var i in Player.list) {
 		var player = Player.list[i];
 		player.updatePosition(); // This loop animates the moving of the character.
-		// player.updateNpcs();
 		player.updateMap();
 		pack.push(player.getUpdatePack());
 	}
@@ -441,9 +440,11 @@ var updateNpcs = function(){
 		console.log("create NPC");
 		var npc = NPC({
 			id:1,
-			x:300,
-			y:300,
+			x:555,
+			y:365,
+			mapFloor:"house1Floor",
 			number:1,
+			name:"OldMan",
 		});
 		console.log(NPC.list);
 	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
@@ -463,16 +464,21 @@ var NPC = function(param){
 			id:self.id,
 			x:self.x,
 			y:self.y,
-			number:self.number
+			mapFloor:self.mapFloor,
 		};
 	}
-
+	self.name = param.name;
 	self.getUpdatePack = function(){
 		return {
 			id:self.id,
 			x:self.x,
-			y:self.y
+			y:self.y,
+			number:self.number,
+			mapFloor:self.mapFloor,
 		};
+	}
+	self.updatePosition = function(){
+		return;  // Add movement later
 	}
 
 	NPC.list[self.id] = self;
@@ -483,10 +489,10 @@ var NPC = function(param){
 NPC.list = {};
 
 NPC.update = function(){
-	var town = false;  // This will have to be changed to make it work.
-	if (town) {
-		// put code to remove NPC if you leave a town by changing value to self.toRemove to true
-	}
+	// var town = false;  // This will have to be changed to make it work.
+	// if (town) {
+	// 	// put code to remove NPC if you leave a town by changing value to self.toRemove to true
+	// }
 	var pack = [];
 	for (var i in NPC.list) {
 		var npc = NPC.list[i];
@@ -654,7 +660,7 @@ setInterval(function(){
 	player: Player.update(), // This interates through for players and other entities.
 	npc: NPC.update()// Add Npc list to animate characters.
 	}
-
+	// console.log(NPC.update());
 	for (var i in SOCKET_LIST){ //This is a loop to emit positions to client
 		var socket = SOCKET_LIST[i];
 		socket.emit('init', initPack); 

@@ -2,6 +2,7 @@ var socket;
 var Img;
 var ctx;
 var Player;
+
 var lastXP = null;
 var selfId = null;
 var screenWidth = 700;
@@ -55,7 +56,7 @@ function drawSideUI() {
 }
 
 
-function initSocketIo() {
+function initSocketIo() {  // When initSocketIo is called, it creates the player & npc object on the client side.
     socket = io();
 
 //init package - when new stuff created, contains all the data, sent only once
@@ -100,42 +101,18 @@ function initSocketIo() {
     }
     Player.list = {};
 
-    var NPC = function(initPack) {  // This is for NPCs.
-        var self = {};
-        self.id = initPack.id;
-        self.x = initPack.x;
-        self.y = initPack.y;
-        self.mapFloor = initPack.mapFloor;
-        self.mapCeiling = initPack.mapCeiling;
 
-        self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
-            if(Player.list[selfId].mapFloor !== self.mapFloor){
-                return;
-            }
-            var x = self.x - Player.list[selfId].x + screenWidth/2;
-            var y = self.y - Player.list[selfId].y + screenHeight/2;
-
-            ctx.fillText(self.number, x, y);  // Draws player
-        }
-
-        NPC.list[self.id] = self;
-        return self;
-    }
-    NPC.list = {};
 
     socket.on('init', function(data){
         if (data.selfId) {
             selfId = data.selfId;
+            console.log(data);
         }
 
         for (var i = 0; i < data.player.length; i++) {
             new Player(data.player[i]);
         }
-        if (data.NPC !== undefined){
-            for (var i = 0; i < data.NPC.length; i++) {
-                new NPC(data.npc[i]);
-            }
-        }    
+  
     });
 
     //update package - only contains the difference, sent every frame, only has data if a change happens.
@@ -176,21 +153,42 @@ function initSocketIo() {
             }
         }
         
-        for(var i = 0; i < data.npc.length; i++) {
+
+        // for (var i in NPC.list){
+        //     if (i === undefined && data.npc[0]){
+        //         if(i === data.npc[i].id){
+        //                         console.log("creating NPC at Client through update")
+
+        //         }
+        //     } 
+        // }
+        // if (NPC.list[data.npc[0].id] !== 1){
+        //     console.log("creating NPC at Client through update")
+        //     console.log(data.npc);
+        //     for (var i = 0; i < data.npc.length; i++) {
+        //         new NPC(data.npc[i]);
+        //     }
+        // }  
+
+        for(var i = 0; i < data.npc.length; i++) { // If there is no data in npc.length
             var pack = data.npc[i];
-            var n = NPC.list[pack.id];
-            if(n) {
-                if (pack.x !== undefined) {
+            var n = NPC.list[pack.id]; 
+
+            if(n) {   // This is saying if there is an npc in the NPC.list with the same id as the id in the data.npc, 
+                if (pack.x !== undefined) {   // then update x and y.
                     n.x = pack.x;
                 }
                 if (pack.y !== undefined) {
                     n.y - pack.y;
                 }
+
+            } else {   // This is saying if there is no npc in NPC.list with this id, create the npc.
+                new NPC(pack);  
+                console.log("created NPC on client side")
             }
         }
 
     });
-
 
     //remove package - removes player or npc with id
 
@@ -203,6 +201,34 @@ function initSocketIo() {
             delete NPC.list[data.npc[i]];  // Do I want to delete NPCs?
         }
     });
+
+var NPC = function(initPack) {  // This is for NPCs.
+    var self = {};
+    self.id = initPack.id;
+    self.x = initPack.x;
+    self.y = initPack.y;
+    self.mapFloor = initPack.mapFloor;
+    // self.mapCeiling = initPack.mapCeiling;
+
+    self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
+        if(Player.list[selfId].mapFloor !== self.mapFloor){  // This tells the client not to show NPC if their maps do not match.
+            return;
+        }
+        var x = self.x - Player.list[selfId].x + screenWidth/2; // This keeps the NPC tied to the map when the player moves.
+        var y = self.y - Player.list[selfId].y + screenHeight/2;  // technically the map is moving when the player moves.
+
+        ctx.fillRect(x, y, 30, 34); // draws npc
+    }
+
+    NPC.list[self.id] = self;
+    return self;
+}
+NPC.list = {};
+
+
+function drawblock(){
+    // ctx.fillRect(600, 365, 30, 34); 
+}
 
     // New animation loop
 
@@ -219,6 +245,7 @@ function initSocketIo() {
         for (var i in NPC.list) {
             NPC.list[i].draw();
         }
+        drawblock();
         drawMapCeiling();
     }, 40);
 

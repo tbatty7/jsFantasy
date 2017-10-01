@@ -445,6 +445,12 @@ var updateNpcs = function(){
 			mapFloor:"house1Floor",
 			number:1,
 			name:"OldMan",
+			xPointA:550,
+			xPointB:560,
+			yPointA:365,
+			yPointB:365,
+			spdX:1,
+			spdY:1,
 		});
 		console.log(NPC.list);
 	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
@@ -467,6 +473,12 @@ var NPC = function(param){
 			mapFloor:self.mapFloor,
 		};
 	}
+	self.xPointA = param.xPointA;
+	self.xPointB = param.xPointB;
+	self.yPointA = param.yPointA;
+	self.yPointB = param.yPointB;
+	self.spdX = param.spdX;
+	self.spdY = param.spdY;
 	self.name = param.name;
 	self.getUpdatePack = function(){
 		return {
@@ -478,7 +490,16 @@ var NPC = function(param){
 		};
 	}
 	self.updatePosition = function(){
-		return;  // Add movement later
+		self.x += self.spdX;
+		self.y += self.spdY;
+
+		if(self.xPointA > self.x || self.xPointB < self.x) {
+			self.spdX = -self.spdX;
+		} 
+		if(self.yPointA > self.y || self.yPointB < self.y) {
+			self.spdY = -self.spdY;
+		} 
+
 	}
 
 	NPC.list[self.id] = self;

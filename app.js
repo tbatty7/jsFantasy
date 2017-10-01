@@ -407,8 +407,8 @@ Player.getAllInitPack = function(){
 }
 
 Player.onDisconnect = function(socket){
-	delete Player.list[socket.id];
-	removePack.player.push(socket.id);
+	delete Player.list[socket.id];     // When a player disconnects, this sends the data for the player to be removed
+	removePack.player.push(socket.id); // to the removePack.player array, which is sent to the client on 
 }
 
 Player.update = function(){
@@ -454,9 +454,9 @@ var updateNpcs = function(){
 		});
 		console.log(NPC.list);
 	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
-		//deletes NPC
-		NPC.list = {};
-		console.log("delete NPC");
+		//delete NPC
+		NPC.list[1].toRemove = true;  // When this is set to true, it removes this NPC from the NPC.list and send
+		console.log("delete NPC");    // a packet to the client to delete it from there too.
 	}
 
 }
@@ -480,7 +480,7 @@ var NPC = function(param){
 	self.spdX = param.spdX;
 	self.spdY = param.spdY;
 	self.name = param.name;
-	
+
 	self.getUpdatePack = function(){
 		return {
 			id:self.id,

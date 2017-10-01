@@ -17,8 +17,10 @@ function initImage() {
     Img = {};
     Img.player = new Image();
     Img.player.src = '/client/img/player1.png';
-    Img.npc = new Image();
-    Img.npc.src = '/client/img/oldMan.png';
+    Img.oldMan = new Image();
+    Img.oldMan.src = '/client/img/oldMan.png';
+    Img.soldier1 = new Image();
+    Img.soldier1.src = '/client/img/one-soldier.png';
     Img.mapFloor = {};
     Img.mapFloor['villageFloor'] = new Image();
     Img.mapFloor['villageFloor'].src = '/client/img/villageFloor.png';
@@ -150,23 +152,6 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
             }
         }
         
-
-        // for (var i in NPC.list){
-        //     if (i === undefined && data.npc[0]){
-        //         if(i === data.npc[i].id){
-        //                         console.log("creating NPC at Client through update")
-
-        //         }
-        //     } 
-        // }
-        // if (NPC.list[data.npc[0].id] !== 1){
-        //     console.log("creating NPC at Client through update")
-        //     console.log(data.npc);
-        //     for (var i = 0; i < data.npc.length; i++) {
-        //         new NPC(data.npc[i]);
-        //     }
-        // }  
-
         for(var i = 0; i < data.npc.length; i++) { // If there is no data in npc.length
             var pack = data.npc[i];
             var n = NPC.list[pack.id]; 
@@ -195,8 +180,9 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
             delete Player.list[data.player[i]];
         }
         for (var i = 0; i < data.npc.length; i++) {
-            delete NPC.list[data.npc[i]];  // Do I want to delete NPCs?
+            delete NPC.list[data.npc[i]];  // I want to delete NPCs whenever all players exit their map.
         }
+        
     });
 
 var NPC = function(initPack) {  // This is for NPCs.
@@ -205,7 +191,6 @@ var NPC = function(initPack) {  // This is for NPCs.
     self.x = initPack.x;
     self.y = initPack.y;
     self.mapFloor = initPack.mapFloor;
-    // self.mapCeiling = initPack.mapCeiling;
 
     self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
         if(Player.list[selfId].mapFloor !== self.mapFloor){  // This tells the client not to show NPC if their maps do not match.
@@ -214,11 +199,10 @@ var NPC = function(initPack) {  // This is for NPCs.
         var x = self.x - Player.list[selfId].x + screenWidth/2; // This keeps the NPC tied to the map when the player moves.
         var y = self.y - Player.list[selfId].y + screenHeight/2;  // technically the map is moving when the player moves.
 
-        // ctx.fillRect(x, y, 30, 34); // draws npc as red box
-        var width = Img.npc.width;  //  this is where you can enlarge or shrink the player image
-        var height = Img.npc.height; // by multiplying or dividing the width and height by 2 or more
+        var width = Img.oldMan.width;  //  this is where you can enlarge or shrink the player image
+        var height = Img.oldMan.height; // by multiplying or dividing the width and height by 2 or more
 
-        ctx.drawImage(Img.npc,0,0,Img.npc.width,Img.npc.height,x-width/2,y-height/2,width,height);
+        ctx.drawImage(Img.oldMan,0,0,Img.oldMan.width,Img.oldMan.height,x-width/2,y-height/2,width,height);
 
     }
 
@@ -227,10 +211,6 @@ var NPC = function(initPack) {  // This is for NPCs.
 }
 NPC.list = {};
 
-
-function drawblock(){
-    // ctx.fillRect(600, 365, 30, 34); 
-}
 
     // New animation loop
 
@@ -247,7 +227,6 @@ function drawblock(){
         for (var i in NPC.list) {
             NPC.list[i].draw();
         }
-        drawblock();
         drawMapCeiling();
     }, 40);
 

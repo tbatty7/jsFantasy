@@ -285,7 +285,7 @@ var Player = function(param) { //This will create a player with the properties i
 			self.north = MapList[self.mapFloor].playerY;
 			self.south = MapList[self.mapFloor].playerY;
 			self.mapHeight = MapList[newMapFloor].height;
-			self.mapWidth = MapList[newMapFloor].height;
+			self.mapWidth = MapList[newMapFloor].width;
 			self.mapCeiling = MapList[newMapFloor].mapCeiling;
 			// This changes the mapFloor, thus changing everything above, so hopefully the others will change before this one does.
 			self.mapFloor = newMapFloor;
@@ -422,6 +422,10 @@ Player.update = function(){
 	return pack;	
 }
 
+Player.updateNpcs = function(){  // Maybe this would be a better place to have the npc creeation
+	return;
+}
+
 ////////////////////////////////////////// NPC creation and info //////////////////////////////////
 
 var updateNpcs = function(){
@@ -434,11 +438,13 @@ var updateNpcs = function(){
 			occupied = true;  // This says that if there are any players in this map, the occupancy flag is marked to true	 
 		} 
 	}
-	// The NPC.list is an object with ids as 
+	// The NPC.list is an object with ids as names/keys.
+
+
 	if((NPC.list[1] === undefined) && (occupied === true)){ // If there are no NPCs and occupied is true, create NPCs.
 		//create NPC
-		console.log("create NPC");
-		var npc = NPC({
+		console.log("create Old Man NPC");
+		var npc = NPC({  // This is just for creating the Old Man in the one map of house1Foor.
 			id:1,
 			x:555,
 			y:365,
@@ -452,6 +458,7 @@ var updateNpcs = function(){
 			spdX:0,
 			spdY:1,
 		});
+
 		console.log(NPC.list);
 	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
 		//delete NPC

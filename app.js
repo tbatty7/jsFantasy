@@ -429,44 +429,92 @@ Player.updateNpcs = function(){  // Maybe this would be a better place to have t
 ////////////////////////////////////////// NPC creation and info //////////////////////////////////
 
 var updateNpcs = function(){
-	// This function will add the villagers in the map.  I need to have a way to add different villagers for each map.
-	// Right now I am just trying to make it work with a single villager, the old man.
-	var occupied = false;
+	MapCreateNPCs('house1Floor', [1], house1NPCs);  // This creates the NPC for the first house if anyone is in it, and deletes 
+													// it when all players have left the house.
+  // I can put the rest of the maps here.  Each one requires a unique callback function that creates the NPCs for that map.  
+  // The array contains the ids of the NPCs you are creating.  I am using numbers now.  I could use names of the NPCs if I wanted to.  
+  // But they need to match the ids I am using to create them in the callback function.
+};
+
+// The map parameter is the mapFloor name, the num parameter is the array with the ids of NPCs associated with that map (ex. [2,3,4]), 
+// the NewNPCs is the callback function for the function that will create all the NPCs for that map.
+
+var MapCreateNPCs = function(map,num,NewNPCs){ 
+  var occupied = false;
 
 	for(var i in Player.list){  // Player.list is an object, not an array.
-		if(Player.list[i].mapFloor === "house1Floor"){ // The i in Player.list[i] is the id, NOT the index.  It is the name of the player object
+		if(Player.list[i].mapFloor === map){ // The i in Player.list[i] is the id, NOT the index.  It is the name of the player object
 			occupied = true;  // This says that if there are any players in this map, the occupancy flag is marked to true	 
 		} 
 	}
-	// The NPC.list is an object with ids as names/keys.
+	if((NPC.list[num] === undefined) && (occupied === true)){ // If there are no NPCs and occupied is true, create NPCs.
+			//create NPCs
+      NewNPCs();
+  	} else if (NPC.list[num[0]] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
+			//delete NPC
+	  		for(var j = 0;j<num.length;j++){ // This iterates through the npcs and deletes them one by one.
+		  	   NPC.list[num[j]].toRemove = true;  // When this is set to true, it removes this NPC from the NPC.list and send
+		    	 console.log("delete NPC");    // a packet to the client to delete it from there too.
+	    	}			
+  	}
+};
+
+var house1NPCs = function(){ // This function creates the Old Man NPC for the first house.
+    var oldMan = NPC({ 
+				id:1,
+				x:555,
+				y:365,
+				mapFloor:"house1Floor",
+				number:1,
+				name:"OldMan",
+				xPointA:555,
+				xPointB:555,
+				yPointA:355,
+				yPointB:375,
+				spdX:0,
+				spdY:1,
+			});
+};
+
+// var updateNpcs = function(){
+// 	// This function will add the villagers in the map.  I need to have a way to add different villagers for each map.
+// 	// Right now I am just trying to make it work with a single villager, the old man.
+// 	var occupied = false;
+
+// 	for(var i in Player.list){  // Player.list is an object, not an array.
+// 		if(Player.list[i].mapFloor === "house1Floor"){ // The i in Player.list[i] is the id, NOT the index.  It is the name of the player object
+// 			occupied = true;  // This says that if there are any players in this map, the occupancy flag is marked to true	 
+// 		} 
+// 	}
+// 	// The NPC.list is an object with ids as names/keys.
 
 
-	if((NPC.list[1] === undefined) && (occupied === true)){ // If there are no NPCs and occupied is true, create NPCs.
-		//create NPC
-		console.log("create Old Man NPC");
-		var npc = NPC({  // This is just for creating the Old Man in the one map of house1Foor.
-			id:1,
-			x:555,
-			y:365,
-			mapFloor:"house1Floor",
-			number:1,
-			name:"OldMan",
-			xPointA:555,
-			xPointB:555,
-			yPointA:355,
-			yPointB:375,
-			spdX:0,
-			spdY:1,
-		});
+// 	if((NPC.list[1] === undefined) && (occupied === true)){ // If there are no NPCs and occupied is true, create NPCs.
+// 		//create NPC
+// 		console.log("create Old Man NPC");
+// 		var npc = NPC({  // This is just for creating the Old Man in the one map of house1Foor.
+// 			id:1,
+// 			x:555,
+// 			y:365,
+// 			mapFloor:"house1Floor",
+// 			number:1,
+// 			name:"OldMan",
+// 			xPointA:555,
+// 			xPointB:555,
+// 			yPointA:355,
+// 			yPointB:375,
+// 			spdX:0,
+// 			spdY:1,
+// 		});
 
-		console.log(NPC.list);
-	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
-		//delete NPC
-		NPC.list[1].toRemove = true;  // When this is set to true, it removes this NPC from the NPC.list and send
-		console.log("delete NPC");    // a packet to the client to delete it from there too.
-	}
+// 		console.log(NPC.list);
+// 	} else if (NPC.list[1] && (occupied === false)){  // If there are NPCs and occupied is false, delete the NPCs.
+// 		//delete NPC
+// 		NPC.list[1].toRemove = true;  // When this is set to true, it removes this NPC from the NPC.list and send
+// 		console.log("delete NPC");    // a packet to the client to delete it from there too.
+// 	}
 
-}
+// }
 
 var NPC = function(param){
 	var self = Entity(param);

@@ -48,8 +48,6 @@ function drawMapCeiling() {
 }
 
 function drawSideUI() {
-    // ctx.fillStyle = 'white';
-    // ctx.fillText('XP: ' + Player.list[selfId].xp,30,30); // Puts xp in canvas, I want it outside?
     if(lastXP != Player.list[selfId].xp){
     lastXP = Player.list[selfId].xp;
     $('#xp').append('<h1 class="clearfix">' + Player.list[selfId].xp + '</h1>');
@@ -347,14 +345,7 @@ function LessonOne_Functions(){
     '<h4>This is called passing an argument into a function.  We will talk more about how to create a function so it accepts arguments in a later lesson.</h4>' +
     '<h4>The number you pass as an argument in this function will tell the function how many steps you want to move.  Try it now by clicking the button below and typing it in the command console.</h4>' +
     '<h4>Use the direction functions to go out the door of the hut</h4>' +
-    '<button type="button" class="btn btn-success" onclick="pauseIntro()">Go to Game</button>';
-}
-
-function pauseIntro(){
-    // changeMap('house1Floor', 620, 365);  This is decremented.
-    var div = document.getElementById('dialog'); // This variable is in local scope only, so div won't conflict with other divs.
-    div.style.display = "none";
-    gameDisplay.style.display = "block"; 
+    '<button type="button" class="btn btn-success" onclick="endDialog()">Go to Game</button>';
 }
 
 function secondIntro(){  // Have this called when there is a collision when the player connects with the door
@@ -367,17 +358,21 @@ function secondIntro(){  // Have this called when there is a collision when the 
     '<h3>Old Man: I am afraid you are the only survivor of your village.</h3><h3>You: What? How did that happen?</h3>' +
     '<h3>Old Man: Whatever happened, it is causing the whole world to decay.  Also, your legs are damaged beyond repair.</h3>' +
     '<h3>You: Is that why I can\'t feel my legs?  What am I going to do now?<h3><h3>Old Man: Hmmm... You know...</h3>' +
-    '<button type="button" class="btn btn-warning" style="width:300px;" onclick="playIntro2()">Continue</button>';
+    '<button type="button" class="btn btn-warning" style="width:300px;" onclick="endDialog()">Continue</button>';
     gameDisplay.style.display = "none"; 
     div.style.display = "block";
 }
 
-function endIntro(){
+function endDialog(){
     var div = document.getElementById('dialog');
     div.style.display = "none";
     gameDisplay.style.display = "block"; 
 
     // send back to server to tell it to change the intro: value to false in MongoDB.
+}
+
+function oldManDialog(image){
+    dialog(image,"Old Man: Hello again, If you forgot what the movement functions are, they are north(); south(); east(); and west();.  Now leave.", "Okay, thanks!",endDialog);
 }
 
 function initChat(){
@@ -426,6 +421,22 @@ function dialog(image,text,response,cb){
     $('#resp3').click(arguments[7]);
     }
 
+}
+
+function initDialog(){
+    socket.on('dialog', function(data){
+        // handle dialog logic here.
+        console.log("Player contacted " + data.npcId);
+        var player = data.playerId
+        var npc = data.npcId    
+        if (player !== selfId){ // This ensures that only the player who collided with the npc goes into dialog.
+            return;
+        }  
+        if (npc === 1){  // If the npc that initiated the dialog is the Old Man's ID, then call that function.
+            oldManDialog("./client/img/wizard.jpg");
+        }
+
+    });
 }
 
 function changeMap(mapFloor,x,y){  // No longer needed.  The door array changes the maps.
@@ -556,4 +567,5 @@ function init() {
     initEval();
     initSignIn();
     initSignUp();
+    initDialog();
 }

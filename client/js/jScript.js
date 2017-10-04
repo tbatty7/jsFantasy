@@ -2,7 +2,7 @@ var socket;
 var Img;
 var ctx;
 var Player;
-
+var NPC;
 var lastXP = null;
 var selfId = null;
 var screenWidth = 700;
@@ -100,6 +100,31 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
     }
     Player.list = {};
 
+    NPC = function(initPack) {  // This is for NPCs.
+        var self = {};
+        self.id = initPack.id;
+        self.x = initPack.x;
+        self.y = initPack.y;
+        self.mapFloor = initPack.mapFloor;
+
+        self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
+            if(Player.list[selfId].mapFloor !== self.mapFloor){  // This tells the client not to show NPC if their maps do not match.
+                return;
+            }
+            var x = self.x - Player.list[selfId].x + screenWidth/2; // This keeps the NPC tied to the map when the player moves.
+            var y = self.y - Player.list[selfId].y + screenHeight/2;  // technically the map is moving when the player moves.
+
+            var width = Img.oldMan.width;  //  this is where you can enlarge or shrink the player image
+            var height = Img.oldMan.height; // by multiplying or dividing the width and height by 2 or more
+
+            ctx.drawImage(Img.oldMan,0,0,Img.oldMan.width,Img.oldMan.height,x-width/2,y-height/2,width,height);
+
+        }
+
+        NPC.list[self.id] = self;
+        return self;
+    }
+    NPC.list = {};
 
 
     socket.on('init', function(data){
@@ -182,34 +207,9 @@ function initSocketIo() {  // When initSocketIo is called, it creates the player
         for (var i = 0; i < data.npc.length; i++) {
             delete NPC.list[data.npc[i]];  // I want to delete NPCs whenever all players exit their map.
         }
-        
+
     });
 
-var NPC = function(initPack) {  // This is for NPCs.
-    var self = {};
-    self.id = initPack.id;
-    self.x = initPack.x;
-    self.y = initPack.y;
-    self.mapFloor = initPack.mapFloor;
-
-    self.draw = function(){  // This should be close to what it shows in the Player object draw function with a picture.
-        if(Player.list[selfId].mapFloor !== self.mapFloor){  // This tells the client not to show NPC if their maps do not match.
-            return;
-        }
-        var x = self.x - Player.list[selfId].x + screenWidth/2; // This keeps the NPC tied to the map when the player moves.
-        var y = self.y - Player.list[selfId].y + screenHeight/2;  // technically the map is moving when the player moves.
-
-        var width = Img.oldMan.width;  //  this is where you can enlarge or shrink the player image
-        var height = Img.oldMan.height; // by multiplying or dividing the width and height by 2 or more
-
-        ctx.drawImage(Img.oldMan,0,0,Img.oldMan.width,Img.oldMan.height,x-width/2,y-height/2,width,height);
-
-    }
-
-    NPC.list[self.id] = self;
-    return self;
-}
-NPC.list = {};
 
 
     // New animation loop

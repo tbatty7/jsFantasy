@@ -193,13 +193,6 @@ var Entity = function(param){
 	}
 	self.getDistance = function(pt) {  // THis is necessary for collision
 		return Math.sqrt(Math.pow(self.x-pt.x,2) + Math.pow(self.y-pt.y,2));
-	// to use, create a loop like: 
-	// for(var i in Player.list) {
-	// 		var p = Player.list[i];
-	// 		if (self.getDistance(p) < 32) {
-	//			handle collision, ex: start dialog sequence.
-	// 		}	
-	// }
 	}
 	return self;
 }
@@ -221,6 +214,7 @@ var Player = function(param) { //This will create a player with the properties i
 	self.hpMax = 10;
 	self.xp = 0;  // This will increase with any successful action.
 	self.intro = false;  // This determines if the intro sequence runs.
+	self.dialog = false;
 	self.npcCollision = function(){
 		for(var i in NPC.list) {
 			var n = NPC.list[i];
@@ -229,6 +223,29 @@ var Player = function(param) { //This will create a player with the properties i
 				return true;
 			}	
 		}	
+	}
+	self.pvpCollision = function(){
+			for(var i in Player.list) {
+			var p = Player.list[i];
+			if (p !== Player.list[self.id] && p.dialog === false && self.dialog === false) { // This makes sure you are not having a collision with yourself.
+				if (self.getDistance(p) < 32) {  // This tests if you collide with another player...
+					// handle collision, ex: start dialog sequence.
+					self.dialog = true;  // This can be used to prevent 3 players from initiating dialog at once.
+					// You only need the pop up from this player, both players will have the same thing happen.
+					self.dialogWith(p.id); // This triggers a popup for this player referencing the other player and vice versa.
+					// I need to mimic the private chat message function on this for the sockets.
+					return true; // This is so it can be used as the Boolean in an if statement for movement 
+				}
+			}	
+		}	
+	}
+	self.stepBack = function(oldX,oldY){
+			self.x = oldX;
+			self.east = oldX;
+			self.west = oldX;
+			self.y = oldY;
+			self.north = oldY;
+			self.south = oldY;
 	}
 	self.updatePosition = function() {
 		var oldX = self.x;
@@ -272,23 +289,16 @@ var Player = function(param) { //This will create a player with the properties i
 
 				// Map content Collision testing
 		if (MapList[self.mapFloor].isPositionWall(self)){  // This tests truthy if it returns a number it is true.
-			self.x = oldX;
-			self.east = oldX;
-			self.west = oldX;
-			self.y = oldY;
-			self.north = oldY;
-			self.south = oldY;
+			self.stepBack(oldX,oldY);
 		}
 		if (self.npcCollision()){  // This tests if the player is colliding with any npc
 			for (var i in NPC.list){
 				NPC.list[i].playerCollision(); // This has to initiate the dialog function with the npc
 			}
-			self.x = oldX;  // then the positions need to change or the dialog will keep on popping up.
-			self.east = oldX;
-			self.west = oldX;
-			self.y = oldY;
-			self.north = oldY;
-			self.south = oldY;
+			self.stepBack(oldX,oldY);  // then the positions need to change or the dialog will keep on popping up.
+		}
+		if (self.pvpCollision()) {  // This also initiates the dialog with another player before the position is backed up.
+			self.stepBack(oldX,oldY);
 		}
 
 

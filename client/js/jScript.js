@@ -435,8 +435,19 @@ function initDialog(){
         if (npc === 1){  // If the npc that initiated the dialog is the Old Man's ID, then call that function.
             oldManDialog("./client/img/wizard.jpg");
         }
+        for (var i in Player.list){
+            if (npc === Player.list[i]){
+                var p = Player.list[i];
+                pvpDialog(p.username);
+            }
+        }
 
     });
+}
+
+function pvpDialog(name){
+    // put a generic image here instead of Old Man image.
+    dialog("./client/img/wizard.jpg", "Hello, I am " + name + " and I would like to have a duel.  Would you like to practice, wager something, or play to the death?","I'll practice",endDialog);
 }
 
 function changeMap(mapFloor,x,y){  // No longer needed.  The door array changes the maps.
